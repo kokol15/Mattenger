@@ -10,22 +10,14 @@
 
 Socket::Socket(){
     
-    int s1 = socket(AF_INET, SOCK_DGRAM, 0);
-    int s2 = socket(AF_INET, SOCK_DGRAM, 0);
+    int soc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     
-    if(s1 < 0){
+    if(soc < 0){
         print_error("Failed to create sending socket");
         return;
     }
-    else
-        this -> s_soc = s1;
     
-    if(s2 < 0){
-        print_error("Failed to create recieving socket");
-        return;
-    }
-    else
-        this -> r_soc = s2;
+    this -> soc = soc;
     
 }
 
@@ -35,7 +27,7 @@ void Socket::print_error(std::string err){
     
 }
 
-void Socket::create_comm_point(const char *address, int port){
+void Socket::create_comm_point(const char *address){
     
     struct sockaddr_in s_addr;
     struct sockaddr_in r_addr;
@@ -61,32 +53,23 @@ void Socket::create_comm_point(const char *address, int port){
 
 void Socket::bind_socket(){
     
-    if (bind(this -> r_soc, (struct sockaddr *)&this -> rcv_address, this -> rcv_addr_size) < 0 ) {
+    if (bind(this -> soc, (struct sockaddr *)&this -> rcv_address, this -> rcv_addr_size) < 0 ) {
         print_error("Failed to bind recieving socket");
         return;
     }
     
 }
 
-ssize_t Socket::listen(char *output, size_t size){
-    
-    int r = this -> r_soc;
-    long retval = recvfrom(r, output, size, 0, (struct sockaddr*)&this -> send_address, &this -> send_addr_size);
-    return retval;
-    
-}
-
 ssize_t Socket::recieve(char *output, size_t size){
     
-    int r = this -> s_soc;
-    return recv(r, output, size, 0);
+    return recvfrom(this -> soc, output, size, 0, (struct sockaddr*)&this -> send_address, &this -> send_addr_size);
     
 }
 
 void Socket::send(char *msg, size_t size){
     std::this_thread::sleep_for (std::chrono::seconds(1));
     
-    int s = this -> s_soc;
+    int s = this -> soc;
     socklen_t addr_size = sizeof(this -> send_address);
     sendto(s, msg, size, 0, (struct sockaddr*)&this -> send_address, addr_size);
 

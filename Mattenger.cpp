@@ -10,9 +10,9 @@
 
 bool CONNECTION_ALIVE = false;
 
-Mattenger::Mattenger(const char *addr, int port){
+Mattenger::Mattenger(const char *addr){
     
-    Socket::create_comm_point(addr, port);
+    Socket::create_comm_point(addr);
     Socket::bind_socket();
     
 }
@@ -83,6 +83,6 @@ void Mattenger::listen_for_connection(){
 }
 
 void Mattenger::start(){
-    std::thread t1(&Mattenger::listen_for_connection, this);
+    std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
 }

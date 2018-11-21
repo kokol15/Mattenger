@@ -20,8 +20,7 @@
 class Socket{
     
 private:
-    int s_soc;
-    int r_soc;
+    int soc;
     struct sockaddr_in send_address;
     struct sockaddr_in rcv_address;
     socklen_t send_addr_size;
@@ -31,7 +30,7 @@ private:
 public:
     Socket();
     void print_error(std::string err);
-    void create_comm_point(const char *, int);
+    void create_comm_point(const char *);
     void bind_socket();
     void send(char*, size_t);
     struct sockaddr_in get_send_address();
