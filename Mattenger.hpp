@@ -11,11 +11,12 @@
 
 #include "Socket.hpp"
 #define ICMP_HEAD 1
-#define HEAD 10
+#define HEAD 4
 #define SYN 'S'
 #define SYN_ACK 'K'
 #define ACK 'A'
 #define DATA 'D'
+#define DATA_END 'E'
 
 class Mattenger: public Socket{
     
