@@ -23,7 +23,7 @@ void Mattenger::handshake(){
     Socket::send(icmp, ICMP_HEAD);
     long length = Socket::recieve(icmp, ICMP_HEAD);
     if(length < 0)
-        std::cerr << "Failed to recieve massage: ERROR " << errno << std::endl;
+        print_error("Failed to recieve massage");
     if(icmp[0] == SYN_ACK){
         icmp[0] = ACK;
         Socket::send(icmp, ICMP_HEAD);
@@ -56,7 +56,7 @@ void Mattenger::recive_msg(){
         long length = Socket::recieve(msg, 100);
         
         if(length < 0)
-            std::cerr << "Failed to recieve massage: ERROR " << errno << std::endl;
+            print_error("Failed to recieve massage");
         else
             std::cout << msg << std::endl;
     }
@@ -68,12 +68,12 @@ void Mattenger::listen_for_connection(){
     while(true){
         char *icmp = (char*)calloc(ICMP_HEAD, sizeof(char));
         if(Socket::listen(icmp, ICMP_HEAD) < 0)
-            std::cerr << "Failed to recieve massage: ERROR " << errno << std::endl;
+            print_error("Failed to recieve massage");
         else if(icmp[0] == SYN){
             icmp[0] = SYN_ACK;
             Socket::send(icmp, ICMP_HEAD);
             if(Socket::recieve(icmp, ICMP_HEAD) < 0)
-                std::cerr << "Failed to recieve massage: ERROR " << errno << std::endl;
+                print_error("Failed to recieve massage");
             else if(icmp[0] == ACK){
                 CONNECTION_ALIVE = true;
                 std::thread t2(&Mattenger::recive_msg, this);

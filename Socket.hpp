@@ -9,12 +9,12 @@
 #ifndef Socket_hpp
 #define Socket_hpp
 
-#include <iostream>
-#include <stdio.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <iostream>
+#include <stdio.h>
 
 class Socket{
     
@@ -29,6 +29,7 @@ private:
     
 public:
     Socket();
+    void print_error(std::string err);
     void create_comm_point(const char *, int);
     void bind_socket();
     void send(char*, size_t);

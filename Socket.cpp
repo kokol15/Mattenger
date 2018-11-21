@@ -14,14 +14,14 @@ Socket::Socket(){
     int s2 = socket(AF_INET, SOCK_DGRAM, 0);
     
     if(s1 < 0){
-        std::cerr << "Failed to create sending socket: ERROR " << errno << std::endl;
+        print_error("Failed to create sending socket");
         return;
     }
     else
         this -> s_soc = s1;
     
     if(s2 < 0){
-        std::cerr << "Failed to create recieving socket: ERROR " << errno << std::endl;
+        print_error("Failed to create recieving socket");
         return;
     }
     else
@@ -29,24 +29,27 @@ Socket::Socket(){
     
 }
 
+void Socket::print_error(std::string err){
+    
+    std::cerr << err + ": ERROR " << errno  << " (" << strerror(errno) << ")" << std::endl;
+    
+}
+
 void Socket::create_comm_point(const char *address, int port){
+    
+    u_long host = inet_addr(address);
     
     struct sockaddr_in s_addr;
     struct sockaddr_in r_addr;
     memset(&s_addr, 0, sizeof(s_addr));
     memset(&r_addr, 0, sizeof(r_addr));
-    char arr[4];
-    int a, b, c, d;
-    
-    sscanf(address, "%d.%d.%d.%d", &a, &b, &c, &d);
-    arr[0] = a; arr[1] = b; arr[2] = c; arr[3] = d;
     
     s_addr.sin_family = AF_INET;
     s_addr.sin_port = htons(50050);
-    if(arr[0] == 127 && arr[1] == 0 && arr[2] == 0 && arr[3] == 1)
+    if(strcmp(address, "127.0.0.1") == 0)
         s_addr.sin_addr.s_addr = INADDR_ANY;
     else
-        s_addr.sin_addr.s_addr = *(unsigned int*)arr;
+        s_addr.sin_addr.s_addr = inet_addr(address);
     
     r_addr.sin_family = AF_INET;
     r_addr.sin_port = htons(50050);
@@ -54,13 +57,14 @@ void Socket::create_comm_point(const char *address, int port){
     
     this -> send_address = s_addr;
     this -> rcv_address = r_addr;
+    this -> rcv_addr_size = sizeof(r_addr);
     
 }
 
 void Socket::bind_socket(){
     
-    if (bind(this -> r_soc, (struct sockaddr *)&this -> rcv_address, sizeof(&this -> rcv_addr_size)) < 0 ) {
-        std::cerr << "Failed to bind recieving socket: ERROR " << errno << std::endl;
+    if (bind(this -> r_soc, (struct sockaddr *)&this -> rcv_address, this -> rcv_addr_size) < 0 ) {
+        print_error("Failed to bind recieving socket");
         return;
     }
     
