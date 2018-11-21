@@ -15,6 +15,7 @@
 #define SYN 'S'
 #define SYN_ACK 'K'
 #define ACK 'A'
+#define DATA 'D'
 
 class Mattenger: public Socket{
     
@@ -23,8 +24,6 @@ public:
     void send_msg(const char*, size_t);
     void recive_msg();
     void start();
-    void handshake();
-    void listen_for_connection();
     
 };
 

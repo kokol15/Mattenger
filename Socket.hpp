@@ -36,7 +36,6 @@ public:
     struct sockaddr_in get_send_address();
     struct sockaddr_in get_rcv_address();
     ssize_t recieve(char *, size_t);
-    ssize_t listen(char *, size_t);
     
 };
 

@@ -17,7 +17,7 @@ Mattenger::Mattenger(const char *addr){
     
 }
 
-void Mattenger::handshake(){
+/*void Mattenger::handshake(){
     char icmp[ICMP_HEAD] = {SYN};
     Socket::send(icmp, ICMP_HEAD);
     long length = Socket::recieve(icmp, ICMP_HEAD);
@@ -28,14 +28,15 @@ void Mattenger::handshake(){
         Socket::send(icmp, ICMP_HEAD);
         CONNECTION_ALIVE = true;
     }
-}
+}*/
 
 void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
         int i;
         char *s_msg = (char*)calloc(100, sizeof(char));
-        for(i = 0; msg[i] != 0; i++)
+        s_msg[0] = DATA;
+        for(i = 1; msg[i] != 0; i++)
             s_msg[i] = msg[i];
         s_msg[i] = 0;
         
@@ -43,26 +44,55 @@ void Mattenger::send_msg(const char *msg, size_t size){
     }
     
     else{
-        handshake();
+        char icmp_msg[ICMP_HEAD] = {SYN};
+        Socket::send(icmp_msg, ICMP_HEAD);
         send_msg(msg, size);
     }
 }
 
 void Mattenger::recive_msg(){
     
-    while(true){
+    char icmp_msg[ICMP_HEAD];
+    
+    do{
         char *msg = (char*)calloc(100, sizeof(char));
         long length = Socket::recieve(msg, 100);
         
         if(length < 0)
             print_error("Failed to recieve massage");
         else
-            std::cout << "Sprava: "<< msg << std::endl;
-    }
+            switch(msg[0]){
+                case SYN:
+                    icmp_msg[0] = {SYN_ACK};
+                    Socket::send(icmp_msg, ICMP_HEAD);
+                    break;
+                    
+                case SYN_ACK:
+                    icmp_msg[0] = {ACK};
+                    Socket::send(icmp_msg, ICMP_HEAD);
+                    break;
+                    
+                case ACK:
+                    CONNECTION_ALIVE = true;
+                    break;
+                    
+                case DATA:
+                    if(CONNECTION_ALIVE){
+                        int i = 1;
+                        while(msg[i] != 0){
+                            std::cout << msg[i++];
+                        }
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+    }while(true);
     
 }
 
-void Mattenger::listen_for_connection(){
+/*void Mattenger::listen_for_connection(){
     
     while(true){
         char *icmp = (char*)calloc(ICMP_HEAD, sizeof(char));
@@ -80,7 +110,7 @@ void Mattenger::listen_for_connection(){
             }
         }
     }
-}
+}*/
 
 void Mattenger::start(){
     std::thread t1(&Mattenger::recive_msg, this);
