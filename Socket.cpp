@@ -37,8 +37,6 @@ void Socket::print_error(std::string err){
 
 void Socket::create_comm_point(const char *address, int port){
     
-    u_long host = inet_addr(address);
-    
     struct sockaddr_in s_addr;
     struct sockaddr_in r_addr;
     memset(&s_addr, 0, sizeof(s_addr));
@@ -80,13 +78,14 @@ ssize_t Socket::listen(char *output, size_t size){
 ssize_t Socket::recieve(char *output, size_t size){
     
     int r = this -> r_soc;
-    return recv(r, output, size, 0);
+    return recvfrom(r, output, size, 0, (struct sockaddr*)&this -> send_address, &this -> send_addr_size);
     
 }
 
 void Socket::send(char *msg, size_t size){
+    std::this_thread::sleep_for (std::chrono::seconds(1));
     
-    int s = this -> s_soc;
+    int s = this -> r_soc;
     socklen_t addr_size = sizeof(this -> send_address);
     sendto(s, msg, size, 0, (struct sockaddr*)&this -> send_address, addr_size);
 

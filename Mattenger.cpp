@@ -7,7 +7,6 @@
 //
 
 #include "Mattenger.hpp"
-#include <thread>
 
 bool CONNECTION_ALIVE = false;
 
@@ -58,7 +57,7 @@ void Mattenger::recive_msg(){
         if(length < 0)
             print_error("Failed to recieve massage");
         else
-            std::cout << msg << std::endl;
+            std::cout << "Sprava: "<< msg << std::endl;
     }
     
 }
