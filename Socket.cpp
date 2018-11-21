@@ -49,7 +49,7 @@ void Socket::create_comm_point(const char *address, int port){
         s_addr.sin_addr.s_addr = *(unsigned int*)arr;
     
     r_addr.sin_family = AF_INET;
-    r_addr.sin_port = htons(50040);
+    r_addr.sin_port = htons(50050);
     r_addr.sin_addr.s_addr = INADDR_ANY;
     
     this -> send_address = s_addr;
@@ -59,12 +59,7 @@ void Socket::create_comm_point(const char *address, int port){
 
 void Socket::bind_socket(){
     
-    if (bind(this -> s_soc, (struct sockaddr *)&this -> send_address, sizeof(this -> send_address)) < 0 ) {
-        std::cerr << "Failed to bind sending socket: ERROR " << errno << std::endl;
-        return;
-    }
-    
-    if (bind(this -> r_soc, (struct sockaddr *)&this -> rcv_address, sizeof(this -> rcv_address)) < 0 ) {
+    if (bind(this -> r_soc, (struct sockaddr *)&this -> rcv_address, sizeof(&this -> rcv_addr_size)) < 0 ) {
         std::cerr << "Failed to bind recieving socket: ERROR " << errno << std::endl;
         return;
     }
@@ -74,7 +69,7 @@ void Socket::bind_socket(){
 ssize_t Socket::listen(char *output, size_t size){
     
     int r = this -> r_soc;
-    return recvfrom(r, output, size, 0, (struct sockaddr*)&this -> rcv_address, &this -> rcv_addr_size);
+    return recvfrom(r, output, size, 0, (struct sockaddr*)&this -> send_address, &this -> send_addr_size);
     
 }
 

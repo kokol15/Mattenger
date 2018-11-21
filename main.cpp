@@ -11,7 +11,7 @@
 
 int main() {
     
-    Mattenger matt = Mattenger("127.0.0.1", 50050);
+    Mattenger matt = Mattenger("192.168.0.104", 50050);
     matt.start();
     
     std::string msg;
