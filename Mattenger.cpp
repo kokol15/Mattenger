@@ -12,6 +12,7 @@
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */
 #define FIRST 37 /* also prime */
+#define SLEEP std::this_thread::sleep_for (std::chrono::milliseconds(10));
 
 bool CONNECTION_ALIVE = false;
 short FRAGMENT_SIZE = 2;
@@ -74,7 +75,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
             
             Socket::send(_msg_, j);
-            //std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            SLEEP
             i++;
         }
         printf("\n");
@@ -87,7 +88,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
     else{
         char icmp_msg[ICMP_HEAD] = {SYN};
         Socket::send(icmp_msg, ICMP_HEAD);
-        //std::this_thread::sleep_for (std::chrono::milliseconds(100));
+        SLEEP
         send_msg(msg, size);
     }
 }
@@ -162,7 +163,7 @@ void Mattenger::recive_msg(){
                     while(msg[i] >= 0){
                         Socket::send(MSG[msg[i]], get_size(MSG[msg[i]]));
                         i++;
-                        std::this_thread::sleep_for (std::chrono::milliseconds(100));
+                        SLEEP
                     }
                         
                     break;
