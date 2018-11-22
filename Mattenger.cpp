@@ -51,11 +51,11 @@ void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
         short i = 0, k = 0, j, _i;
-        int l;
+        int l, m;
         
-        for(l = 0; l < MAX_SIZE; l++){
-            MSG[l] = NULL;
-        }
+        for(l = 0; l < MAX_SIZE; l++)
+            for(m = 0; _MSG_[l][m] != 0; m++)
+                _MSG_[l][m] = 0;
         
         short num = size/FRAGMENT_SIZE;
         if(size % FRAGMENT_SIZE == 1)
@@ -174,9 +174,9 @@ void Mattenger::recive_msg(){
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     
-                    for(i = 0; i < MAX_SIZE; i++){
-                        MSG[i] = NULL;
-                    }
+                    for(i = 0; i < MAX_SIZE; i++)
+                        for(i = 0; MSG[i][j] != 0; j++)
+                            MSG[i][j] = 0;
                     
                     break;
                     
