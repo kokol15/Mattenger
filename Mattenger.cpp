@@ -87,7 +87,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             
             Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            std::this_thread::sleep_for (std::chrono::milliseconds(500));
             i++;
         }
         printf("\n");
@@ -184,7 +184,7 @@ void Mattenger::recive_msg(){
                         j--;
                         std::string s = _MSG_[j];
                         Socket::send(s.c_str(), s.size());
-                        std::this_thread::sleep_for (std::chrono::milliseconds(100));
+                        std::this_thread::sleep_for (std::chrono::milliseconds(500));
                         memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
                         i++;
                     }
