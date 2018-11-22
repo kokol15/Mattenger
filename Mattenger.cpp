@@ -54,7 +54,6 @@ void Mattenger::send_msg(const char *msg, size_t size){
         int l;
         
         for(l = 0; l < MAX_SIZE; l++){
-            free(_MSG_[l]);
             _MSG_[l] = NULL;
         }
         
@@ -169,7 +168,6 @@ void Mattenger::recive_msg(){
                     recreate_msg.clear();
                     
                     for(i = 0; i < MAX_SIZE; i++){
-                        free(MSG[i]);
                         MSG[i] = NULL;
                     }
                     
