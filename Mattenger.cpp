@@ -42,17 +42,20 @@ void Mattenger::send_msg(const char *msg, size_t size){
         if(size % FRAGMENT_SIZE == 1)
             num++;
         
-        char s_msg[HEAD + size + 1];
-        *(short*)s_msg[0] = num;
+        char _msg_[HEAD + size + 1];
+        memcpy(_msg_, &num, sizeof(short));
         while(i < num){
             k = 0; j = HEAD;
-            *(short*)s_msg[sizeof(short)] = i;
-            while(msg[k] != 0) s_msg[j] = msg[k++];
-            s_msg[j++] = 0;
-            Socket::send(s_msg, j);
+            memcpy((_msg_ + sizeof(short)), &num, sizeof(short));
+            while(msg[k] != 0) _msg_[j] = msg[k++];
+            _msg_[j++] = 0;
+            Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(500));
             i++;
         }
+        
+        char end[ICMP_HEAD] = {DATA_END};
+        Socket::send(end, ICMP_HEAD);
         
     }
     
@@ -107,8 +110,8 @@ void Mattenger::recive_msg(){
                     
                 default:
                     if(CONNECTION_ALIVE){
-                        tot_num = *(short*)msg[0];
-                        seq_num = *(short*)msg[sizeof(short)];
+                        memcpy(&tot_num, msg, sizeof(char));
+                        memcpy(&seq_num, (msg + sizeof(char)), sizeof(char));
                         
                         MSG[seq_num] = (char*)calloc(FRAGMENT_SIZE + 1, sizeof(char));
                         i = sizeof(short);
