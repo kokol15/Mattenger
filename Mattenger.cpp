@@ -53,8 +53,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         short i = 0, k = 0, j, _i;
         int l, m;
         
-        for(l = 0; l < MAX_SIZE; l++)
-            _MSG_[l] = 0;
+        for(l = 0; l < MAX_SIZE; l++) _MSG_[l] = 0;
         
         short num = size/FRAGMENT_SIZE;
         if(size % FRAGMENT_SIZE == 1)
@@ -173,8 +172,7 @@ void Mattenger::recive_msg(){
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     
-                    for(i = 0; i < MAX_SIZE; i++)
-                        MSG[i] = 0;
+                    for(i = 0; i < MAX_SIZE; i++) MSG[i] = 0;
                     
                     break;
                     
