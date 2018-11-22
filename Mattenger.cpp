@@ -14,7 +14,7 @@
 #define FIRST 37 /* also prime */
 
 bool CONNECTION_ALIVE = false;
-bool ALTER_CRC = true;
+bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char *MSG[MAX_SIZE];
@@ -54,7 +54,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         int l;
         
         for(l = 0; l < MAX_SIZE; l++){
-            _MSG_[l] = NULL;
+            free(_MSG_[l]);
         }
         
         short num = size/FRAGMENT_SIZE;
@@ -173,7 +173,7 @@ void Mattenger::recive_msg(){
                     recreate_msg.clear();
                     
                     for(i = 0; i < MAX_SIZE; i++){
-                        MSG[i] = NULL;
+                        free(MSG[i]);
                     }
                     
                     break;
