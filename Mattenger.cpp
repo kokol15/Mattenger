@@ -17,8 +17,8 @@ bool CONNECTION_ALIVE = false;
 bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
-char *MSG[MAX_SIZE];
-char *_MSG_[MAX_SIZE];
+char **MSG;
+char **_MSG_;
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
@@ -54,7 +54,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         int l;
         
         for(l = 0; l < MAX_SIZE; l++){
-            free(_MSG_[l]);
+            MSG[l] = NULL;
         }
         
         short num = size/FRAGMENT_SIZE;
@@ -134,11 +134,13 @@ void Mattenger::recive_msg(){
                     
                 case SYN_ACK:
                     icmp_msg[0] = {ACK};
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
                     CONNECTION_ALIVE = true;
                     Socket::send(icmp_msg, ICMP_HEAD);
                     break;
                     
                 case ACK:
+                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     CONNECTION_ALIVE = true;
                     break;
                     
@@ -173,7 +175,7 @@ void Mattenger::recive_msg(){
                     recreate_msg.clear();
                     
                     for(i = 0; i < MAX_SIZE; i++){
-                        free(MSG[i]);
+                        MSG[i] = NULL;
                     }
                     
                     break;
