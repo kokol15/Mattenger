@@ -44,7 +44,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         
         char _msg_[HEAD + FRAGMENT_SIZE];
         memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
-        memcpy(_msg_, &num, 2*sizeof(short));
+        memcpy((_msg_ + 2*sizeof(short)), &num, sizeof(short));
         
         while(i < num){
             _i = 0;
