@@ -119,7 +119,8 @@ void Mattenger::recive_msg(){
                         break;
                     }
                     
-                    while(MSG[i] != 0)
+                    i = 0;
+                    while(MSG[i] != NULL)
                         recreate_msg += MSG[i++];
                     
                     print_msg(recreate_msg);
