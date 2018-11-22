@@ -35,7 +35,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         while(i < num){
             k = 0; j = HEAD;
             memcpy((_msg_ + sizeof(short)), &num, sizeof(short));
-            while((k % FRAGMENT_SIZE) != 0 && msg[k] != 0) _msg_[j++] = msg[k++];
+            while(((k % FRAGMENT_SIZE) != 0 || k == 0) && msg[k] != 0) _msg_[j++] = msg[k++];
             _msg_[j++] = 0;
             Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(500));
