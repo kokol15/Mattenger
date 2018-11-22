@@ -98,7 +98,7 @@ void Mattenger::recive_msg(){
                 case DATA_END:
                     i = 0;
                     j = 0;
-                    while(MSG[i] != 0){
+                    while(MSG[i] != 0)
                         recreate_msg += MSG[i];
                     print_msg(recreate_msg);
                     recreate_msg.clear();
