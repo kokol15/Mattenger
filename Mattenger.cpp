@@ -12,6 +12,10 @@ bool CONNECTION_ALIVE = false;
 short FRAGMENT_SIZE = 2;
 char *MSG[65535];
 
+void print_msg(std::string msg){
+    std::cout << msg << std::endl;
+}
+
 Mattenger::Mattenger(const char *addr){
     
     Socket::create_comm_point(addr);
@@ -29,7 +33,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         if(size % FRAGMENT_SIZE == 1)
             num++;
         
-        char _msg_[HEAD + size + 1];
+        char _msg_[HEAD + FRAGMENT_SIZE];
         memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
         
         while(i < num){
@@ -96,6 +100,7 @@ void Mattenger::recive_msg(){
                             recreate_msg += MSG[i][j++];
                         i++;
                     }
+                    print_msg(recreate_msg);
                     break;
                     
                 default:
