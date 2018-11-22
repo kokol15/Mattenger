@@ -197,13 +197,11 @@ void Mattenger::recive_msg(){
                             
                             std::cout << "Message has been altered" << std::endl;
                             
-                            memcpy(resend, &seq_num, sizeof(short));
-                            _resend_.push_back(RESEND);
-                            _resend_ += resend;
-                            _resend_.push_back(-1);
+                            resend[0] = RESEND;
+                            memcpy((resend + 1), &seq_num, sizeof(short));
+                            resend[sizeof(short)] = -1;
                             
-                            Socket::send(_resend_.c_str(), _resend_.size());
-                            _resend_.clear();
+                            Socket::send(resend, (sizeof(short) + sizeof(char) + 1));
                             
                             break;
                         }
