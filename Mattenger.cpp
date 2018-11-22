@@ -180,7 +180,6 @@ void Mattenger::recive_msg(){
                     j = 0;
                     memcpy(&j, (msg + sizeof(char)), sizeof(short));
                     while(j != 0){
-                        memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
                         j--;
                         std::string s = _MSG_[j];
                         Socket::send(s.c_str(), s.size());
