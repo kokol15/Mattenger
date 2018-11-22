@@ -212,9 +212,8 @@ void Mattenger::recive_msg(){
                             resend[0] = RESEND;
                             seq_num++;
                             memcpy((resend + sizeof(char)), &seq_num, sizeof(short));
-                            memcpy((resend + sizeof(char) + sizeof(short)), 0, sizeof(short));
                             
-                            Socket::send(resend, sizeof(resend));
+                            Socket::send(resend, sizeof(char) + 2*sizeof(short));
                             
                             break;
                         }
