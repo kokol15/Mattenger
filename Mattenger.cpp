@@ -12,6 +12,7 @@
 bool CONNECTION_ALIVE = false;
 short FRAGMENT_SIZE = 2;
 char *MSG[MAX_SIZE];
+char *O_MSG[MAX_SIZE];
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
@@ -45,7 +46,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             _msg_[j++] = 0;
             printf("%s|", (_msg_ + HEAD));
             Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(10));
+            std::this_thread::sleep_for (std::chrono::milliseconds(100));
             i++;
         }
         printf("\n");
@@ -98,10 +99,7 @@ void Mattenger::recive_msg(){
                     i = 0;
                     j = 0;
                     while(MSG[i] != 0){
-                        while(MSG[i][j] != 0)
-                            recreate_msg += MSG[i][j++];
-                        i++;
-                    }
+                        recreate_msg += MSG[i];
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     for(i = 0; i < MAX_SIZE; i++){
