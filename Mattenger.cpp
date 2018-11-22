@@ -11,11 +11,18 @@
 
 bool CONNECTION_ALIVE = false;
 short FRAGMENT_SIZE = 2;
+short FRAG_TOTAL_NUM;
 char *MSG[MAX_SIZE];
 char *O_MSG[MAX_SIZE];
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
+}
+
+ssize_t get_size(char *msg){
+    ssize_t i = 0;
+    while(msg[i] != 0) i++;
+    return i;
 }
 
 Mattenger::Mattenger(const char *addr){
@@ -37,6 +44,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         
         char _msg_[HEAD + FRAGMENT_SIZE];
         memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
+        memcpy(_msg_, &num, 2*sizeof(short));
         
         while(i < num){
             _i = 0;
@@ -66,11 +74,13 @@ void Mattenger::send_msg(const char *msg, size_t size){
 
 void Mattenger::recive_msg(){
     
-    char icmp_msg[ICMP_HEAD];
-    char *msg = (char*)calloc(100, sizeof(char));
-    short tot_num, seq_num;
-    int i, j;
     std::string recreate_msg;
+    std::string resend;
+    std::string _resend_;
+    char *msg = (char*)calloc(100, sizeof(char));
+    char icmp_msg[ICMP_HEAD];
+    short seq_num, size_num;
+    int i = 0, j = 0, k = 0;
     
     do{
         
@@ -96,29 +106,56 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case DATA_END:
-                    i = 0;
-                    j = 0;
+                    for(k = 0; k < FRAG_TOTAL_NUM; k++)
+                        if(MSG[k] == NULL)
+                            resend.push_back(k);
+                    
+                    if(resend.size() > 0){
+                        _resend_.push_back(RESEND);
+                        _resend_ += resend;
+                        _resend_.push_back(-1);
+                        
+                        Socket::send(_resend_.c_str(), _resend_.size());
+                        break;
+                    }
+                    
                     while(MSG[i] != 0)
-                        recreate_msg += MSG[i];
+                        recreate_msg += MSG[i++];
+                    
                     print_msg(recreate_msg);
                     recreate_msg.clear();
+                    
                     for(i = 0; i < MAX_SIZE; i++){
                         free(MSG[i]);
                         MSG[i] = NULL;
                     }
+                    
+                    break;
+                    
+                case RESEND:
+                    i = 1;
+                    while(msg[i] >= 0){
+                        Socket::send(MSG[msg[i]], get_size(MSG[msg[i]]));
+                        i++;
+                        std::this_thread::sleep_for (std::chrono::milliseconds(100));
+                    }
+                        
                     break;
                     
                 default:
                     if(CONNECTION_ALIVE){
-                        memcpy(&tot_num, msg, sizeof(short));
+                        memcpy(&size_num, msg, sizeof(short));
                         memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
+                        memcpy(&FRAG_TOTAL_NUM, (msg + 2*sizeof(short)), sizeof(short));
                         
-                        MSG[seq_num] = (char*)calloc(tot_num + 1, sizeof(char));
+                        MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
                         i = HEAD;
                         j = 0;
-                        while(j < tot_num){
+                        
+                        while(j < size_num){
                             MSG[seq_num][j++] = msg[i++];
                         }
+                        
                         MSG[seq_num][j] = 0;
                     }
                     break;

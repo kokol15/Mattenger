@@ -66,7 +66,7 @@ ssize_t Socket::recieve(char *output, size_t size){
     
 }
 
-void Socket::send(char *msg, size_t size){
+void Socket::send(const char *msg, size_t size){
 //    std::this_thread::sleep_for (std::chrono::milliseconds(100));
     
     int s = this -> soc;

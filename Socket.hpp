@@ -33,7 +33,7 @@ public:
     void print_error(std::string err);
     void create_comm_point(const char *);
     void bind_socket();
-    void send(char*, size_t);
+    void send(const char*, size_t);
     struct sockaddr_in get_send_address();
     struct sockaddr_in get_rcv_address();
     ssize_t recieve(char *, size_t);

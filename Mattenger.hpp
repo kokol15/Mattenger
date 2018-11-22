@@ -11,12 +11,14 @@
 
 #include "Socket.hpp"
 #define ICMP_HEAD sizeof(char)
-#define HEAD (2*sizeof(short))
+#define HEAD (3 * sizeof(short))
+#define RESEND_HEAD (sizeof(char) + sizeof(short))
 #define SYN 'S'
 #define SYN_ACK 'K'
 #define ACK 'A'
 #define DATA 'D'
 #define DATA_END 'E'
+#define RESEND 'R'
 
 class Mattenger: public Socket{
     
