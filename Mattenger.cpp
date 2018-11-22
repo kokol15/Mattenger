@@ -19,19 +19,6 @@ Mattenger::Mattenger(const char *addr){
     
 }
 
-/*void Mattenger::handshake(){
-    char icmp[ICMP_HEAD] = {SYN};
-    Socket::send(icmp, ICMP_HEAD);
-    long length = Socket::recieve(icmp, ICMP_HEAD);
-    if(length < 0)
-        print_error("Failed to recieve massage");
-    if(icmp[0] == SYN_ACK){
-        icmp[0] = ACK;
-        Socket::send(icmp, ICMP_HEAD);
-        CONNECTION_ALIVE = true;
-    }
-}*/
-
 void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
@@ -43,14 +30,12 @@ void Mattenger::send_msg(const char *msg, size_t size){
             num++;
         
         char _msg_[HEAD + size + 1];
-        _msg_[0] = num & 0xff;
-        _msg_[1] = (num >> 8) & 0xff;
+        memcpy(_msg_, &num, sizeof(short));
         
         while(i < num){
             k = 0; j = HEAD;
-            _msg_[0] = i & 0xff;
-            _msg_[1] = (i >> 8) & 0xff;
-            while((k % FRAGMENT_SIZE) != 0 || msg[k] != 0) _msg_[j++] = msg[k++];
+            memcpy((_msg_ + sizeof(short)), &num, sizeof(short));
+            while((k % FRAGMENT_SIZE) != 0 && msg[k] != 0) _msg_[j++] = msg[k++];
             _msg_[j++] = 0;
             Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(500));
@@ -128,26 +113,6 @@ void Mattenger::recive_msg(){
     }while(true);
     
 }
-
-/*void Mattenger::listen_for_connection(){
-    
-    while(true){
-        char *icmp = (char*)calloc(ICMP_HEAD, sizeof(char));
-        if(Socket::listen(icmp, ICMP_HEAD) < 0)
-            print_error("Failed to recieve massage");
-        else if(icmp[0] == SYN){
-            icmp[0] = SYN_ACK;
-            Socket::send(icmp, ICMP_HEAD);
-            if(Socket::recieve(icmp, ICMP_HEAD) < 0)
-                print_error("Failed to recieve massage");
-            else if(icmp[0] == ACK){
-                CONNECTION_ALIVE = true;
-                std::thread t2(&Mattenger::recive_msg, this);
-                t2.detach();
-            }
-        }
-    }
-}*/
 
 void Mattenger::start(){
     std::thread t1(&Mattenger::recive_msg, this);
