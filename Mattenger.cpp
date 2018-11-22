@@ -155,7 +155,10 @@ void Mattenger::recive_msg(){
                     if(i > 0){
                         _resend_.push_back(RESEND);
                         _resend_ += resend;
-                        _resend_.push_back(-1);
+                        _resend_.push_back(0);
+                        _resend_.push_back(0);
+                        _resend_.push_back(0);
+                        _resend_.push_back(0);
                         
                         Socket::send(_resend_.c_str(), _resend_.size());
                         _resend_.clear();
