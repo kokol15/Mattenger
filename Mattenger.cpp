@@ -79,7 +79,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             unsigned short crc = computeCRC((_msg_ + HEAD));
             memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
             _MSG_[i] = (char*)calloc(j, sizeof(char));
-            memcpy(_MSG_[i], _msg_, j*sizeof(char));
+            memcpy((_MSG_ + i), _msg_, j*sizeof(char));
             
             if(ALTER_CRC){
                 _msg_[HEAD] = '.';
