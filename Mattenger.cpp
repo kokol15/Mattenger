@@ -56,8 +56,6 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             SENDING_FINNISHED = false;
             
-            _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
-            
             short i = 0, k = 0, j, _i;
             
             short num = size/FRAGMENT_SIZE;
@@ -138,11 +136,14 @@ void Mattenger::recive_msg(){
                     
                 case SYN_ACK:
                     icmp_msg[0] = {ACK};
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
+                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     CONNECTION_ALIVE = true;
                     Socket::send(icmp_msg, ICMP_HEAD);
                     break;
                     
                 case ACK:
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
                     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     CONNECTION_ALIVE = true;
                     break;
