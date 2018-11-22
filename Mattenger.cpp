@@ -89,7 +89,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             
             Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            std::this_thread::sleep_for (std::chrono::milliseconds(200));
             i++;
         }
         printf("\n");
@@ -209,13 +209,13 @@ void Mattenger::recive_msg(){
                             
                             std::cout << "Message has been altered" << std::endl;
                             
-                            resend[0] = RESEND;
+                            /*resend[0] = RESEND;
                             seq_num++;
                             memcpy((resend + sizeof(char)), &seq_num, sizeof(short));
                             
                             Socket::send(resend, sizeof(char) + 2*sizeof(short));
                             
-                            break;
+                            break;*/
                         }
                         
                         MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
