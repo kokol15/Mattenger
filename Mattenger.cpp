@@ -15,7 +15,7 @@
 
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
-bool ALTER_CRC = false;
+bool ALTER_CRC = true;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
@@ -57,8 +57,6 @@ void Mattenger::send_msg(const char *msg, size_t size){
             SENDING_FINNISHED = false;
             
             short i = 0, k = 0, j, _i;
-            
-            _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
             
             short num = size/FRAGMENT_SIZE;
             if(size % FRAGMENT_SIZE == 1)
@@ -179,8 +177,8 @@ void Mattenger::recive_msg(){
                     recreate_msg.clear();
                     
                     icmp_msg[0] = DONE_SENDING;
-                    Socket::send(icmp_msg, ICMP_HEAD);
                     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
+                    Socket::send(icmp_msg, ICMP_HEAD);
                     
                     break;
                     
@@ -203,6 +201,7 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case DONE_SENDING:
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
                     SENDING_FINNISHED = true;
                     break;
                     
