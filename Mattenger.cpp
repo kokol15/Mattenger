@@ -190,6 +190,9 @@ void Mattenger::recive_msg(){
                         memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
                         i++;
                     }
+                    
+                    char end[ICMP_HEAD] = {DATA_END};
+                    Socket::send(end, ICMP_HEAD);
                         
                     break;
                     
