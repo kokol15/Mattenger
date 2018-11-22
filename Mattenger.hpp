@@ -19,6 +19,7 @@
 #define DATA 'D'
 #define DATA_END 'E'
 #define RESEND 'R'
+#define DONE_SENDING 'F'
 
 class Mattenger: public Socket{
     

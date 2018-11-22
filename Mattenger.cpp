@@ -14,6 +14,7 @@
 #define FIRST 37 /* also prime */
 
 bool CONNECTION_ALIVE = false;
+bool SENDING_FINNISHED = true;
 bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
@@ -50,50 +51,55 @@ Mattenger::Mattenger(const char *addr){
 void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
-        short i = 0, k = 0, j, _i;
-        int l, m;
         
-        for(l = 0; l < MAX_SIZE; l++) _MSG_[l] = 0;
-        
-        short num = size/FRAGMENT_SIZE;
-        if(size % FRAGMENT_SIZE == 1)
-            num++;
-        
-        char _msg_[HEAD + FRAGMENT_SIZE];
-        memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
-        memcpy((_msg_ + 2*sizeof(short)), &num, sizeof(short));
-        
-        while(i < num){
-            _i = 0;
-            j = HEAD;
+        if(SENDING_FINNISHED){
             
-            memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
-            while( _i++ < FRAGMENT_SIZE && msg[k] != 0) _msg_[j++] = msg[k++];
+            SENDING_FINNISHED = false;
             
-            _msg_[j++] = 0;
-            printf("%s|", (_msg_ + HEAD));
+            short i = 0, k = 0, j, _i;
             
-            unsigned short crc = computeCRC((_msg_ + HEAD));
-            memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+            _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
             
-            _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
-            memcpy(_MSG_[i], _msg_, j*sizeof(char));
-            _MSG_[i][j] = 0;
+            short num = size/FRAGMENT_SIZE;
+            if(size % FRAGMENT_SIZE == 1)
+                num++;
             
-            if(ALTER_CRC){
-                _msg_[HEAD] = '.';
-                ALTER_CRC = false;
+            char _msg_[HEAD + FRAGMENT_SIZE];
+            memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
+            memcpy((_msg_ + 2*sizeof(short)), &num, sizeof(short));
+            
+            while(i < num){
+                _i = 0;
+                j = HEAD;
+                
+                memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
+                while( _i++ < FRAGMENT_SIZE && msg[k] != 0) _msg_[j++] = msg[k++];
+                
+                _msg_[j++] = 0;
+                printf("%s|", (_msg_ + HEAD));
+                
+                unsigned short crc = computeCRC((_msg_ + HEAD));
+                memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+                
+                _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
+                memcpy(_MSG_[i], _msg_, j*sizeof(char));
+                _MSG_[i][j] = 0;
+                
+                if(ALTER_CRC){
+                    _msg_[HEAD] = '.';
+                    ALTER_CRC = false;
+                }
+                
+                
+                Socket::send(_msg_, j);
+                std::this_thread::sleep_for (std::chrono::milliseconds(500));
+                i++;
             }
+            printf("\n");
             
-            
-            Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(500));
-            i++;
+            char end[ICMP_HEAD] = {DATA_END};
+            Socket::send(end, ICMP_HEAD);
         }
-        printf("\n");
-        
-        char end[ICMP_HEAD] = {DATA_END};
-        Socket::send(end, ICMP_HEAD);
         
     }
     
@@ -172,7 +178,9 @@ void Mattenger::recive_msg(){
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     
-                    for(i = 0; i < MAX_SIZE; i++) MSG[i] = 0;
+                    icmp_msg[0] = DONE_SENDING;
+                    Socket::send(icmp_msg, ICMP_HEAD);
+                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     
                     break;
                     
@@ -192,6 +200,10 @@ void Mattenger::recive_msg(){
                     icmp_msg[0] = {DATA_END};
                     Socket::send(icmp_msg, ICMP_HEAD);
                         
+                    break;
+                    
+                case DONE_SENDING:
+                    SENDING_FINNISHED = true;
                     break;
                     
                 default:
