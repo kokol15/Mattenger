@@ -42,11 +42,12 @@ void Mattenger::send_msg(const char *msg, size_t size){
             memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
             while( _i++ < FRAGMENT_SIZE && msg[k] != 0) _msg_[j++] = msg[k++];
             _msg_[j++] = 0;
-            printf("%s", (_msg_ + HEAD));
+            printf("%s|", (_msg_ + HEAD));
             Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(500));
             i++;
         }
+        printf("\n");
         
         char end[ICMP_HEAD] = {DATA_END};
         Socket::send(end, ICMP_HEAD);
@@ -109,7 +110,7 @@ void Mattenger::recive_msg(){
                         memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
                         
                         MSG[seq_num] = (char*)calloc(tot_num + 1, sizeof(char));
-                        i = sizeof(short);
+                        i = HEAD;
                         j = 0;
                         while(j < tot_num){
                             MSG[seq_num][j++] = msg[i++];
