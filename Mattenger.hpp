@@ -11,7 +11,7 @@
 
 #include "Socket.hpp"
 #define ICMP_HEAD sizeof(char)
-#define HEAD (3 * sizeof(short))
+#define HEAD (4 * sizeof(short))
 #define RESEND_HEAD (sizeof(char) + sizeof(short))
 #define SYN 'S'
 #define SYN_ACK 'K'
