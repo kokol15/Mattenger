@@ -18,7 +18,7 @@ bool ALTER_CRC = true;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char *MSG[MAX_SIZE];
-char *O_MSG[MAX_SIZE];
+char *_MSG_[MAX_SIZE];
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
@@ -51,7 +51,12 @@ void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
         short i = 0, k = 0, j, _i;
+        int l;
         
+        for(l = 0; l < MAX_SIZE; l++){
+            free(_MSG_[l]);
+            _MSG_[l] = NULL;
+        }
         
         short num = size/FRAGMENT_SIZE;
         if(size % FRAGMENT_SIZE == 1)
@@ -73,10 +78,14 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             unsigned short crc = computeCRC((_msg_ + HEAD));
             memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+            _MSG_[i] = (char*)calloc(j, sizeof(char));
+            memcpy(_MSG_, _msg_, j*sizeof(char));
+            
             if(ALTER_CRC){
                 _msg_[HEAD] = '.';
                 ALTER_CRC = false;
             }
+            
             
             Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(100));
@@ -100,7 +109,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(100, sizeof(char));
-    int i = 0, j = 0, k = 0;
+    int i = 0, j = 0;
     std::string recreate_msg;
     std::string resend;
     std::string _resend_;
@@ -133,9 +142,9 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case DATA_END:
-                    for(k = 0; k < FRAG_TOTAL_NUM; k++)
-                        if(MSG[k] == NULL)
-                            resend.push_back(k);
+                    for(j = 0; j < FRAG_TOTAL_NUM; j++)
+                        if(MSG[j] == NULL)
+                            resend.push_back(j);
                     
                     if(resend.size() > 0){
                         _resend_.push_back(RESEND);
@@ -165,7 +174,7 @@ void Mattenger::recive_msg(){
                 case RESEND:
                     i = 1;
                     while(msg[i] >= 0){
-                        Socket::send(MSG[msg[i]], get_size(MSG[msg[i]]));
+                        Socket::send(_MSG_[msg[i]], get_size(_MSG_[msg[i]]));
                         i++;
                         std::this_thread::sleep_for (std::chrono::milliseconds(100));
                     }
@@ -196,14 +205,9 @@ void Mattenger::recive_msg(){
                         }
                         
                         MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
-                        i = HEAD;
-                        j = 0;
+                        memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
                         
-                        while(j < size_num){
-                            MSG[seq_num][j++] = msg[i++];
-                        }
-                        
-                        MSG[seq_num][j] = 0;
+                        MSG[seq_num][size_num] = 0;
                     }
                     break;
             }
