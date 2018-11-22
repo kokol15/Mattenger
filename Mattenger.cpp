@@ -109,10 +109,10 @@ void Mattenger::send_msg(const char *msg, size_t size){
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(100, sizeof(char));
-    int i = 0, j = 0;
+    short i = 0, j = 0;
     std::string recreate_msg;
-    std::string resend;
     std::string _resend_;
+    char resend[MAX_SIZE] = {0};
     char icmp_msg[ICMP_HEAD];
     short seq_num, size_num;
     
@@ -142,18 +142,18 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case DATA_END:
+                    i = 0;
                     for(j = 0; j < FRAG_TOTAL_NUM; j++)
                         if(MSG[j] == NULL)
-                            resend.push_back(j);
+                            memcpy((resend + i++), &j, sizeof(short));
                     
-                    if(resend.size() > 0){
+                    if(i > 0){
                         _resend_.push_back(RESEND);
                         _resend_ += resend;
                         _resend_.push_back(-1);
                         
                         Socket::send(_resend_.c_str(), _resend_.size());
                         _resend_.clear();
-                        resend.clear();
                         break;
                     }
                     
@@ -173,8 +173,11 @@ void Mattenger::recive_msg(){
                     
                 case RESEND:
                     i = 1;
-                    while(msg[i] >= 0){
-                        Socket::send(_MSG_[msg[i]], get_size(_MSG_[msg[i]]));
+                    j = 0;
+                    while(j >= 0){
+                        memcpy(&j, (msg + i), sizeof(short));
+                        std::string s = _MSG_[j];
+                        Socket::send(s.c_str(), s.size());
                         i++;
                         std::this_thread::sleep_for (std::chrono::milliseconds(100));
                     }
