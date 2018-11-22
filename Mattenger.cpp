@@ -191,8 +191,8 @@ void Mattenger::recive_msg(){
                         i++;
                     }
                     
-                    char end[ICMP_HEAD] = {DATA_END};
-                    Socket::send(end, ICMP_HEAD);
+                    icmp_msg[0] = {DATA_END};
+                    Socket::send(icmp_msg, ICMP_HEAD);
                         
                     break;
                     
