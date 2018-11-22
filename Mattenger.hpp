@@ -10,8 +10,8 @@
 #define Mattenger_hpp
 
 #include "Socket.hpp"
-#define ICMP_HEAD 1
-#define HEAD 4
+#define ICMP_HEAD sizeof(char)
+#define HEAD (2*sizeof(short))
 #define SYN 'S'
 #define SYN_ACK 'K'
 #define ACK 'A'
