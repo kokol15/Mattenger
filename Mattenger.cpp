@@ -79,7 +79,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             unsigned short crc = computeCRC((_msg_ + HEAD));
             memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
             _MSG_[i] = (char*)calloc(j, sizeof(char));
-            memcpy(_MSG_, _msg_, j*sizeof(char));
+            memcpy(_MSG_[i], _msg_, j*sizeof(char));
             
             if(ALTER_CRC){
                 _msg_[HEAD] = '.';
@@ -88,7 +88,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             
             Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            //std::this_thread::sleep_for (std::chrono::milliseconds(100));
             i++;
         }
         printf("\n");
@@ -101,7 +101,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
     else{
         char icmp_msg[ICMP_HEAD] = {SYN};
         Socket::send(icmp_msg, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::milliseconds(500));
+        //std::this_thread::sleep_for (std::chrono::milliseconds(500));
         send_msg(msg, size);
     }
 }
@@ -176,7 +176,7 @@ void Mattenger::recive_msg(){
                     while(msg[i] >= 0){
                         Socket::send(_MSG_[msg[i]], get_size(_MSG_[msg[i]]));
                         i++;
-                        std::this_thread::sleep_for (std::chrono::milliseconds(100));
+                        //std::this_thread::sleep_for (std::chrono::milliseconds(100));
                     }
                         
                     break;
