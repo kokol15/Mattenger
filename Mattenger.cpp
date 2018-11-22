@@ -113,11 +113,8 @@ void Mattenger::recive_msg(){
                     
                 default:
                     if(CONNECTION_ALIVE){
-                        //memcpy(&tot_num, msg, sizeof(char));
-                        //memcpy(&seq_num, (msg + sizeof(char)), sizeof(char));
-                        
-                        tot_num = *(short*)msg[0];
-                        seq_num = *(short*)msg[sizeof(short)];
+                        memcpy(&tot_num, msg, sizeof(char));
+                        memcpy(&seq_num, (msg + sizeof(char)), sizeof(char));
                         
                         MSG[seq_num] = (char*)calloc(FRAGMENT_SIZE + 1, sizeof(char));
                         i = sizeof(short);
