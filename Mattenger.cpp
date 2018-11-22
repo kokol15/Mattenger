@@ -7,10 +7,11 @@
 //
 
 #include "Mattenger.hpp"
+#define MAX_SIZE 65535
 
 bool CONNECTION_ALIVE = false;
 short FRAGMENT_SIZE = 2;
-char *MSG[65535];
+char *MSG[MAX_SIZE];
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
@@ -44,7 +45,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             _msg_[j++] = 0;
             printf("%s|", (_msg_ + HEAD));
             Socket::send(_msg_, j);
-            std::this_thread::sleep_for (std::chrono::milliseconds(500));
+            std::this_thread::sleep_for (std::chrono::milliseconds(10));
             i++;
         }
         printf("\n");
@@ -102,6 +103,11 @@ void Mattenger::recive_msg(){
                         i++;
                     }
                     print_msg(recreate_msg);
+                    recreate_msg.clear();
+                    for(i = 0; i < MAX_SIZE; i++){
+                        free(MSG[i]);
+                        MSG[i] = NULL;
+                    }
                     break;
                     
                 default:
