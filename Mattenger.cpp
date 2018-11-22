@@ -14,6 +14,7 @@
 #define FIRST 37 /* also prime */
 
 bool CONNECTION_ALIVE = false;
+bool ALTER_CRC = true;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char *MSG[MAX_SIZE];
@@ -72,6 +73,10 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             unsigned short crc = computeCRC((_msg_ + HEAD));
             memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+            if(ALTER_CRC){
+                _msg_[HEAD] = '.';
+                ALTER_CRC = false;
+            }
             
             Socket::send(_msg_, j);
             std::this_thread::sleep_for (std::chrono::milliseconds(100));
