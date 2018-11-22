@@ -143,9 +143,13 @@ void Mattenger::recive_msg(){
                     
                 case DATA_END:
                     i = 0;
-                    for(j = 0; j < FRAG_TOTAL_NUM; j++)
-                        if(MSG[j] == NULL)
-                            memcpy((resend + i++), &j, sizeof(short));
+                    for(j = 0; j < FRAG_TOTAL_NUM; j++){
+                        if(MSG[j] == NULL){
+                            short tmp = j;
+                            tmp++;
+                            memcpy((resend + i++), &tmp, sizeof(short));
+                        }
+                    }
                     
                     if(i > 0){
                         _resend_.push_back(RESEND);
@@ -174,12 +178,14 @@ void Mattenger::recive_msg(){
                 case RESEND:
                     i = 1;
                     j = 0;
-                    while(j >= 0){
-                        memcpy(&j, (msg + i), sizeof(short));
+                    memcpy(&j, (msg + sizeof(char)), sizeof(short));
+                    while(j > 0){
+                        j--;
                         std::string s = _MSG_[j];
                         Socket::send(s.c_str(), s.size());
-                        i++;
                         std::this_thread::sleep_for (std::chrono::milliseconds(100));
+                        memcpy(&j, (msg + i), sizeof(short));
+                        i++;
                     }
                         
                     break;
@@ -198,6 +204,7 @@ void Mattenger::recive_msg(){
                             std::cout << "Message has been altered" << std::endl;
                             
                             resend[0] = RESEND;
+                            seq_num++;
                             memcpy((resend + 1), &seq_num, sizeof(short));
                             resend[sizeof(short)] = -1;
                             
