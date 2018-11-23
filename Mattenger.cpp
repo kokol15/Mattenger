@@ -197,7 +197,8 @@ void Mattenger::recive_msg(){
                         if(MSG[j] == NULL){
                             short tmp = j;
                             tmp++;
-                            memcpy((resend + i++), &tmp, sizeof(short));
+                            memcpy((resend + i*sizeof(short) + sizeof(char)), &tmp, sizeof(short));
+                            i++;
                         }
                     }
                     
