@@ -92,16 +92,7 @@ void recive_data(char *msg){
     
 }
 
-void Mattenger::send_msg(const char *msg, size_t size, short n, char choice){
-    
-    ALTER_CRC = false;
-    std::cout << "Aká má byt veľkosť fragmentu?" << std::endl;
-    std::cin >> FRAGMENT_SIZE;
-    std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
-    std::cin >> choice;
-    
-    if(choice == 1)
-        ALTER_CRC = true;
+void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
         

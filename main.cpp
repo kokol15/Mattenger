@@ -13,16 +13,12 @@ int main() {
     matt.start();
     
     std::string msg;
-    short FRAGMENT_SIZE;
-    char choice = 0;
+    
+    std::cout << "Napíš niečo:" << std::endl;
     
     while(true){
-        std::cout << "Aká má byt veľkosť fragmentu?" << std::endl;
-        std::cin >> FRAGMENT_SIZE;
-        std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
-        std::cout << "Napíš niečo:" << std::endl;
         std::getline(std::cin, msg);
-        matt.send_msg(msg.c_str(), msg.size(), FRAGMENT_SIZE, choice);
+        matt.send_msg(msg.c_str(), msg.size());
     }
     
     return 0;
