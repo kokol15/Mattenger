@@ -94,6 +94,7 @@ void recive_data(char *msg){
 
 void Mattenger::send_msg(const char *msg, size_t size){
     
+    ALTER_CRC = false;
     char choice = 0;
     std::cout << "Aká má byt veľkosť fragmentu?" << std::endl;
     std::cin >> FRAGMENT_SIZE;
