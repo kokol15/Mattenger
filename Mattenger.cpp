@@ -278,4 +278,7 @@ void Mattenger::start(){
     
     std::thread t2(&Mattenger::keep_alive, this);
     t2.detach();
+    
+    std::thread t3(&Mattenger::check_keepalive, this);
+    t3.detach();
 }
