@@ -214,6 +214,8 @@ void Mattenger::recive_msg(){
                 default:
                     if(CONNECTION_ALIVE){
                         
+                        printf("%hu\n", msg[sizeof(short)]);
+                        
                         memcpy(&size_num, msg, sizeof(short));
                         memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
                         memcpy(&FRAG_TOTAL_NUM, (msg + 2*sizeof(short)), sizeof(short));
