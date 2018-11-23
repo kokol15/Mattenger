@@ -15,7 +15,7 @@
 
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
-bool ALTER_CRC = true;
+bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
@@ -214,7 +214,7 @@ void Mattenger::recive_msg(){
                 default:
                     if(CONNECTION_ALIVE){
                         
-                        printf("%s\n", msg[HEAD]);
+                        printf("%s\n", &msg[HEAD]);
                         
                         memcpy(&size_num, msg, sizeof(short));
                         memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
