@@ -21,6 +21,7 @@
 #define RESEND 'R'
 #define DONE_SENDING 'F'
 #define KEEP_ALIVE 'X'
+#define YES_KEEP_ALIVE 'Y'
 
 class Mattenger: public Socket{
     

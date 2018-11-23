@@ -228,6 +228,11 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case KEEP_ALIVE:
+                    icmp_msg[0] = YES_KEEP_ALIVE;
+                    Socket::send(icmp_msg, ICMP_HEAD);
+                    break;
+                    
+                case YES_KEEP_ALIVE:
                     KEEPALIVE_SEND = true;
                     break;
                     
