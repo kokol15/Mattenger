@@ -16,7 +16,7 @@
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
-bool ALTER_CRC = false;
+bool ALTER_CRC = true;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
@@ -51,7 +51,7 @@ Mattenger::Mattenger(const char *addr){
 
 void Mattenger::keep_alive(){
     
-    std::this_thread::sleep_for (std::chrono::seconds(20));
+    std::this_thread::sleep_for (std::chrono::seconds(10));
     
     while(this -> KEEPALIVE){
         
@@ -266,11 +266,33 @@ void Mattenger::recive_msg(){
     
 }
 
+void Mattenger::send_file(const char* f_name){
+    
+    short i = 0;
+    while(f_name[i] != 0) i++;
+    char name[sizeof(char) + sizeof(short) + i];
+    name[0] = FILE_NAME;
+    memcpy((name + sizeof(char)), &i, sizeof(short));
+    memcpy((name + sizeof(char) + sizeof(short)), f_name, i);
+    
+    std::ifstream infile;
+    infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);
+    
+    int N = infile.tellg();
+    char msg[N];
+    infile.read(msg, N);
+    Mattenger::send(msg, N);
+    
+}
+
 void Mattenger::start(){
+    
     std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
     
     std::thread t2(&Mattenger::keep_alive, this);
     t2.detach();
+    
+    //Mattenger::send_file("hello.txt");
     
 }

@@ -22,6 +22,7 @@
 #define DONE_SENDING 'F'
 #define KEEP_ALIVE 'X'
 #define YES_KEEP_ALIVE 'Y'
+#define FILE_NAME 'N'
 
 class Mattenger: public Socket{
 private:
@@ -33,6 +34,7 @@ public:
     void recive_msg();
     void start();
     void keep_alive();
+    void send_file(const char*);
     
 };
 
