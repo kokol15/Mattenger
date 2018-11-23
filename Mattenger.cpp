@@ -132,7 +132,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(100, sizeof(char));
-    short i = 0, j = 0;
+    short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
     char resend[MAX_SIZE] = {0};
@@ -212,10 +212,11 @@ void Mattenger::recive_msg(){
                     memcpy(&j, (msg + sizeof(char)), sizeof(short));
                     while(j != 0){
                         j--;
-                        std::string s = _MSG_[j];
                         std::cout << (_MSG_[j] + HEAD) << std::endl;
                         printf("%hu\n", _MSG_[sizeof(short)]);
-                        Socket::send(s.c_str(), s.size());
+                        memcpy(&n, _MSG_[j], sizeof(short));
+                        n += HEAD;
+                        Socket::send(_MSG_[j], n);
                         std::this_thread::sleep_for (std::chrono::milliseconds(500));
                         memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
                         i++;
