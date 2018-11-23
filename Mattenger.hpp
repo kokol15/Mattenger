@@ -20,6 +20,7 @@
 #define DATA_END 'E'
 #define RESEND 'R'
 #define DONE_SENDING 'F'
+#define KEEP_ALIVE 'X'
 
 class Mattenger: public Socket{
     
@@ -28,6 +29,7 @@ public:
     void send_msg(const char*, size_t);
     void recive_msg();
     void start();
+    void keep_alive();
     
 };
 

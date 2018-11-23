@@ -15,6 +15,7 @@
 
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
+bool KEEPALIVE_SEND = false;
 bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
@@ -45,6 +46,21 @@ Mattenger::Mattenger(const char *addr){
     
     Socket::create_comm_point(addr);
     Socket::bind_socket();
+    
+}
+
+void Mattenger::keep_alive(){
+    
+    do{
+        
+        char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
+        Socket::send(keep_alive, ICMP_HEAD);
+        std::this_thread::sleep_for (std::chrono::seconds(5));
+        
+    }while(KEEPALIVE_SEND);
+    
+    std::cout << "Disconecting" << std::endl;
+    exit(1);
     
 }
 
@@ -211,6 +227,10 @@ void Mattenger::recive_msg(){
                     SENDING_FINNISHED = true;
                     break;
                     
+                case KEEP_ALIVE:
+                    KEEPALIVE_SEND = true;
+                    break;
+                    
                 default:
                     if(CONNECTION_ALIVE){
                         
@@ -241,4 +261,7 @@ void Mattenger::recive_msg(){
 void Mattenger::start(){
     std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
+    
+    std::thread t2(&Mattenger::keep_alive, this);
+    t2.detach();
 }
