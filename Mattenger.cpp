@@ -127,12 +127,13 @@ void Mattenger::send_msg(const char *msg, size_t size){
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
                 _MSG_[i][j] = 0;
                 
+                if(i == (num - 1))
+                    ALTER_CRC = true;
                 if(ALTER_CRC){
-                    int pos = rand() % FRAGMENT_SIZE;
+                    int pos = rand() % _i;
                     _msg_[pos + HEAD] = '@';
                     ALTER_CRC = false;
                 }
-                
                 
                 Socket::send(_msg_, j);
                 std::this_thread::sleep_for (std::chrono::milliseconds(500));
@@ -271,6 +272,11 @@ void Mattenger::send_file(const char* f_name){
     
     short i = 0;
     while(f_name[i] != 0) i++;
+    
+    short num = i/FRAGMENT_SIZE;
+    if(i % FRAGMENT_SIZE > 0)
+        num++;
+    
     char name[sizeof(char) + sizeof(short) + i];
     name[0] = FILE_NAME;
     memcpy((name + sizeof(char)), &i, sizeof(short));

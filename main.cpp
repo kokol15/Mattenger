@@ -9,7 +9,7 @@
 #include "Mattenger.hpp"
 
 int main() {
-    Mattenger matt = Mattenger("192.168.0.104");
+    Mattenger matt = Mattenger("172.20.10.5");
     matt.start();
     
     std::string msg;
@@ -23,4 +23,3 @@ int main() {
     
     return 0;
 }
-
