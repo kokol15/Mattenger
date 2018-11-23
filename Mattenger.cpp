@@ -51,7 +51,7 @@ Mattenger::Mattenger(const char *addr){
 
 void Mattenger::keep_alive(){
     
-    std::this_thread::sleep_for (std::chrono::seconds(10));
+    std::this_thread::sleep_for (std::chrono::seconds(60));
     
     while(this -> KEEPALIVE){
         
