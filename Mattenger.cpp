@@ -92,6 +92,35 @@ void recive_data(char *msg){
     
 }
 
+short create_data_header(char *_msg_, const char *msg, short size){
+    
+    short i = 0, k = 0;
+    
+    short _i = 0;
+    short j = HEAD;
+    
+    memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
+    while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
+    
+    _msg_[j++] = 0;
+    printf("%s|", (_msg_ + HEAD));
+    
+    unsigned short crc = computeCRC((_msg_ + HEAD));
+    memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+    
+    _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
+    memcpy(_MSG_[i], _msg_, j*sizeof(char));
+    _MSG_[i][j] = 0;
+    
+    if(ALTER_CRC){
+        int pos = rand() % FRAGMENT_SIZE;
+        _msg_[pos + HEAD] = '@';
+        ALTER_CRC = false;
+    }
+    
+    return j;
+}
+
 void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
@@ -100,7 +129,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             SENDING_FINNISHED = false;
             
-            short i = 0, k = 0, j, _i;
+            short i = 0, j;
             
             short num = size/FRAGMENT_SIZE;
             if(size % FRAGMENT_SIZE > 0)
@@ -111,29 +140,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
             memcpy((_msg_ + 2*sizeof(short)), &num, sizeof(short));
             
             while(i < num){
-                _i = 0;
-                j = HEAD;
-                
-                memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
-                while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
-                
-                _msg_[j++] = 0;
-                printf("%s|", (_msg_ + HEAD));
-                
-                unsigned short crc = computeCRC((_msg_ + HEAD));
-                memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
-                
-                _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
-                memcpy(_MSG_[i], _msg_, j*sizeof(char));
-                _MSG_[i][j] = 0;
-                
-                if(ALTER_CRC){
-                    int pos = rand() % FRAGMENT_SIZE;
-                    _msg_[pos + HEAD] = '@';
-                    ALTER_CRC = false;
-                }
-                
-                
+                j = create_data_header(_msg_, msg, size);
                 Socket::send(_msg_, j);
                 std::this_thread::sleep_for (std::chrono::milliseconds(500));
                 i++;
