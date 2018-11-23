@@ -100,12 +100,6 @@ void Mattenger::send_msg(const char *msg, size_t size){
             
             SENDING_FINNISHED = false;
             
-            char choice = 0;
-            std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
-            std::cin >> choice;
-            if(choice == 1)
-                ALTER_CRC = true;
-            
             short i = 0, k = 0, j, _i;
             
             short num = size/FRAGMENT_SIZE;
@@ -296,6 +290,12 @@ void Mattenger::start(){
     
     std::cout << "Velkost posielaného fragmentu?" << std::endl;
     std::cin >> FRAGMENT_SIZE;
+    
+    char choice = 0;
+    std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
+    std::cin >> choice;
+    if(choice == 1)
+        ALTER_CRC = true;
     
     std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
