@@ -51,20 +51,14 @@ Mattenger::Mattenger(const char *addr){
 
 void Mattenger::keep_alive(){
     
+    std::this_thread::sleep_for (std::chrono::seconds(20));
+    
     while(this -> KEEPALIVE){
         
         this -> KEEPALIVE = false;
         char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
         Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(10));
-        Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(10));
-        Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(10));
-        Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(10));
-        Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(10));
+        std::this_thread::sleep_for (std::chrono::seconds(5));
         
     }
     
