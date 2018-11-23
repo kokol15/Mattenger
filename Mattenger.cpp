@@ -60,6 +60,9 @@ void Mattenger::keep_alive(){
         
     }
     
+    std::cout << "Disconected" << std::endl;
+    exit(1);
+    
 }
 
 void Mattenger::send_msg(const char *msg, size_t size){
