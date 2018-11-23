@@ -21,7 +21,6 @@ short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
-time_t lastTime;
 
 void print_msg(std::string msg){
     std::cout << msg << std::endl;
@@ -50,28 +49,14 @@ Mattenger::Mattenger(const char *addr){
     
 }
 
-void Mattenger::check_keepalive()
-{
-    time_t now;
-    std::this_thread::sleep_for (std::chrono::seconds(1));
-    while(true){
-        if(difftime(time(&now), lastTime) > 60){
-            if (KEEPALIVE){
-                std::cout << "Disconnected" << std::endl;
-                exit(1);
-            }
-            KEEPALIVE = false;
-        }
-    }
-}
-
 void Mattenger::keep_alive(){
     
-    while(true){
+    while(KEEPALIVE){
         
+        KEEPALIVE = false;
         char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
         Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(1));
+        std::this_thread::sleep_for (std::chrono::seconds(10));
         
     }
     
@@ -241,7 +226,12 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case KEEP_ALIVE:
-                    time(&lastTime);
+                    icmp_msg[0] = {YES_KEEP_ALIVE};
+                    Socket::send(icmp_msg, ICMP_HEAD);
+                    break;
+                    
+                case YES_KEEP_ALIVE:
+                    KEEPALIVE = true;
                     break;
                     
                 default:
@@ -278,6 +268,4 @@ void Mattenger::start(){
     std::thread t2(&Mattenger::keep_alive, this);
     t2.detach();
     
-    std::thread t3(&Mattenger::check_keepalive, this);
-    t3.detach();
 }
