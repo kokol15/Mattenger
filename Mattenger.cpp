@@ -16,7 +16,7 @@
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
-bool ALTER_CRC = true;
+bool ALTER_CRC = false;
 short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
@@ -99,6 +99,12 @@ void Mattenger::send_msg(const char *msg, size_t size){
         if(SENDING_FINNISHED){
             
             SENDING_FINNISHED = false;
+            
+            char choice = 0;
+            std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
+            std::cin >> choice;
+            if(choice == 1)
+                ALTER_CRC = true;
             
             short i = 0, k = 0, j, _i;
             
@@ -287,6 +293,9 @@ void Mattenger::send_file(const char* f_name){
 }
 
 void Mattenger::start(){
+    
+    std::cout << "Velkost posielaného fragmentu?" << std::endl;
+    std::cin >> FRAGMENT_SIZE;
     
     std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
