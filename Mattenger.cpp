@@ -54,16 +54,13 @@ void Mattenger::check_keepalive()
 {
     time_t now;
     std::this_thread::sleep_for (std::chrono::seconds(1));
-    do {
-        if (difftime(time(&now), lastTime) > 10)
-        {
+    while(true){
+        if(difftime(time(&now), lastTime) > 10){
             if (KEEPALIVE)
-            {
                 std::cout << "Disconnected" << std::endl;
-            }
             KEEPALIVE = false;
         }
-    } while (true);
+    }
 }
 
 void Mattenger::keep_alive(){
@@ -72,7 +69,7 @@ void Mattenger::keep_alive(){
         
         char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
         Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(60));
+        std::this_thread::sleep_for (std::chrono::seconds(1));
         
     }
     
