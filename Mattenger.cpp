@@ -67,6 +67,31 @@ void Mattenger::keep_alive(){
     
 }
 
+void recive_data(char *msg){
+    
+    short size_num = 0, seq_num = 0, crc = 0, _crc_ = 0;
+    
+    if(CONNECTION_ALIVE){
+        
+        memcpy(&size_num, msg, sizeof(short));
+        memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
+        memcpy(&FRAG_TOTAL_NUM, (msg + 2*sizeof(short)), sizeof(short));
+        memcpy(&crc, (msg + 3*sizeof(short)), sizeof(short));
+        
+        _crc_ = computeCRC((msg + HEAD));
+        if(_crc_ != crc){
+            std::cout << "Message has been altered" << std::endl;
+            return;
+        }
+        
+        MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
+        memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
+        
+        MSG[seq_num][size_num] = 0;
+    }
+    
+}
+
 void Mattenger::send_msg(const char *msg, size_t size){
     
     if(CONNECTION_ALIVE){
@@ -131,19 +156,16 @@ void Mattenger::send_msg(const char *msg, size_t size){
 
 void Mattenger::recive_msg(){
     
-    char *msg = (char*)calloc(100, sizeof(char));
+    char *msg = (char*)calloc(MAX_SIZE, sizeof(char));
     short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
     char resend[MAX_SIZE] = {0};
     char icmp_msg[ICMP_HEAD];
-    short seq_num, size_num;
     
     do{
         
-        long length = Socket::recieve(msg, 100);
-        unsigned short crc;
-        unsigned short _crc_;
+        long length = Socket::recieve(msg, MAX_SIZE);
         
         if(length < 0)
             print_error("Failed to recieve massage");
@@ -222,7 +244,6 @@ void Mattenger::recive_msg(){
                     
                     icmp_msg[0] = {DATA_END};
                     Socket::send(icmp_msg, ICMP_HEAD);
-                        
                     break;
                     
                 case DONE_SENDING:
@@ -239,24 +260,7 @@ void Mattenger::recive_msg(){
                     break;
                     
                 default:
-                    if(CONNECTION_ALIVE){
-                        
-                        memcpy(&size_num, msg, sizeof(short));
-                        memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
-                        memcpy(&FRAG_TOTAL_NUM, (msg + 2*sizeof(short)), sizeof(short));
-                        memcpy(&crc, (msg + 3*sizeof(short)), sizeof(short));
-                        
-                        _crc_ = computeCRC((msg + HEAD));
-                        if(_crc_ != crc){
-                            std::cout << "Message has been altered" << std::endl;
-                            break;
-                        }
-                        
-                        MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
-                        memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
-                        
-                        MSG[seq_num][size_num] = 0;
-                    }
+                    recive_data(msg);
                     break;
             }
     }while(true);
