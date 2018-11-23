@@ -24,6 +24,8 @@
 #define YES_KEEP_ALIVE 'Y'
 
 class Mattenger: public Socket{
+private:
+    bool KEEPALIVE = true;
     
 public:
     Mattenger(const char *);
