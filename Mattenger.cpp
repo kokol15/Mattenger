@@ -289,7 +289,7 @@ void Mattenger::send_file(const char* f_name){
 void Mattenger::start(){
     
     std::cout << "Velkost posielaného fragmentu?" << std::endl;
-    std::cin >> FRAGMENT_SIZE;
+    scanf("%hu", &FRAGMENT_SIZE);
     
     std::string choice = 0;
     std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
