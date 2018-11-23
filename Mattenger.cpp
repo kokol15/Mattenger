@@ -161,7 +161,9 @@ void Mattenger::recive_msg(){
                     
                     if(i > 0){
                         _resend_.push_back(RESEND);
-                        _resend_ += resend;
+                        i = 0;
+                        while(resend[i] != 0)
+                            _resend_.push_back(resend[i++]);
                         _resend_.push_back(0);
                         _resend_.push_back(0);
                         _resend_.push_back(0);
