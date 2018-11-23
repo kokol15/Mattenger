@@ -84,7 +84,8 @@ void Mattenger::send_msg(const char *msg, size_t size){
                 _MSG_[i][j] = 0;
                 
                 if(ALTER_CRC){
-                    _msg_[HEAD] = '.';
+                    if(_msg_[HEAD] != 0)
+                        _msg_[HEAD] = '.';
                     ALTER_CRC = false;
                 }
                 
@@ -216,16 +217,8 @@ void Mattenger::recive_msg(){
                         
                         _crc_ = computeCRC((msg + HEAD));
                         if(_crc_ != crc){
-                            
                             std::cout << "Message has been altered" << std::endl;
-                            
-                            /*resend[0] = RESEND;
-                            seq_num++;
-                            memcpy((resend + sizeof(char)), &seq_num, sizeof(short));
-                            
-                            Socket::send(resend, sizeof(char) + 2*sizeof(short));
-                            
-                            break;*/
+                            break;
                         }
                         
                         MSG[seq_num] = (char*)calloc(size_num + 1, sizeof(char));
