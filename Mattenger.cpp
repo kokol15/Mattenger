@@ -291,10 +291,10 @@ void Mattenger::start(){
     std::cout << "Velkost posielaného fragmentu?" << std::endl;
     std::cin >> FRAGMENT_SIZE;
     
-    char choice = 0;
+    std::string choice = 0;
     std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
     std::cin >> choice;
-    if(choice == 1)
+    if(choice == "1")
         ALTER_CRC = true;
     
     std::thread t1(&Mattenger::recive_msg, this);
