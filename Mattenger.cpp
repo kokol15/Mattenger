@@ -213,7 +213,6 @@ void Mattenger::recive_msg(){
                     while(j != 0){
                         j--;
                         std::cout << (_MSG_[j] + HEAD) << std::endl;
-                        printf("%hu\n", _MSG_[sizeof(short)]);
                         memcpy(&n, _MSG_[j], sizeof(short));
                         n += HEAD;
                         Socket::send(_MSG_[j], n);
@@ -242,8 +241,6 @@ void Mattenger::recive_msg(){
                     
                 default:
                     if(CONNECTION_ALIVE){
-                        
-                        printf("%s\n", &msg[HEAD]);
                         
                         memcpy(&size_num, msg, sizeof(short));
                         memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
