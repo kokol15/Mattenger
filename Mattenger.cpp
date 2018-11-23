@@ -55,9 +55,11 @@ void Mattenger::check_keepalive()
     time_t now;
     std::this_thread::sleep_for (std::chrono::seconds(1));
     while(true){
-        if(difftime(time(&now), lastTime) > 10){
-            if (KEEPALIVE)
+        if(difftime(time(&now), lastTime) > 60){
+            if (KEEPALIVE){
                 std::cout << "Disconnected" << std::endl;
+                exit(1);
+            }
             KEEPALIVE = false;
         }
     }
@@ -72,9 +74,6 @@ void Mattenger::keep_alive(){
         std::this_thread::sleep_for (std::chrono::seconds(1));
         
     }
-    
-    std::cout << "Disconecting" << std::endl;
-    exit(1);
     
 }
 
