@@ -55,8 +55,8 @@ void Mattenger::keep_alive(){
         
         KEEPALIVE_SEND = false;
         char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
-        Socket::send(keep_alive, ICMP_HEAD);
         std::this_thread::sleep_for (std::chrono::seconds(10));
+        Socket::send(keep_alive, ICMP_HEAD);
         
     }while(KEEPALIVE_SEND);
     
