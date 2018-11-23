@@ -128,10 +128,8 @@ void Mattenger::send_msg(const char *msg, size_t size){
                 _MSG_[i][j] = 0;
                 
                 if(ALTER_CRC){
-                    if(_msg_[HEAD] != 0){
-                        _i = 0;
-                        while(_i < FRAGMENT_SIZE) _msg_[_i++] = '@';
-                    }
+                    int pos = rand() % j + HEAD;
+                    _msg_[pos] = '@';
                     ALTER_CRC = false;
                 }
                 
