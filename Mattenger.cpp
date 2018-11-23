@@ -194,6 +194,8 @@ void Mattenger::recive_msg(){
                     while(j != 0){
                         j--;
                         std::string s = _MSG_[j];
+                        std::cout << (_MSG_[j] + HEAD) << std::endl;
+                        printf("%hu\n", _MSG_[sizeof(short)]);
                         Socket::send(s.c_str(), s.size());
                         std::this_thread::sleep_for (std::chrono::milliseconds(500));
                         memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
