@@ -31,6 +31,7 @@ public:
     void recive_msg();
     void start();
     void keep_alive();
+    void check_keepalive();
     
 };
 
