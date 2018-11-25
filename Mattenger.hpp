@@ -29,6 +29,7 @@
 #define KEEP_ALIVE 'X'
 #define YES_KEEP_ALIVE 'Y'
 #define FILE_NAME 'N'
+#define FILE_DATA 'G'
 
 class Mattenger: public Socket{
 private:
@@ -40,7 +41,8 @@ public:
     void recive_msg();
     void start();
     void keep_alive();
-    void send_file(const char*);
+    void send_file(const char*, size_t);
+    void finnish_sending();
     std::string check_message();
     
 };

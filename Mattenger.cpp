@@ -21,50 +21,31 @@ short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
+std::string FILENAME;
 
-void print_msg(std::string msg){
-    std::cout << msg << std::endl;
-}
-
-ssize_t get_size(char *msg){
+/*ssize_t get_size(char *msg){
     ssize_t i = 0;
     while(msg[i] != 0) i++;
     return i;
+}*/
+
+void create_file(std::string f_data){
+    
+    std::ofstream outfile;
+    outfile.open(FILENAME, std::ios::out | std::ios::trunc );
+    outfile << f_data;
+    outfile.close();
+    
 }
 
-unsigned short computeCRC(const char* s)
-{
+unsigned short computeCRC(const char* s){
+    
     unsigned short h = FIRST;
     while (*s) {
         h = (h * A) ^ (s[0] * B);
         s++;
     }
     return (h % MAX_SIZE);
-}
-
-Mattenger::Mattenger(const char *addr){
-    
-    Socket::create_comm_point(addr);
-    Socket::bind_socket();
-    
-}
-
-void Mattenger::keep_alive(){
-    
-    std::this_thread::sleep_for (std::chrono::seconds(60));
-    
-    while(this -> KEEPALIVE){
-        
-        this -> KEEPALIVE = false;
-        char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
-        Socket::send(keep_alive, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::seconds(5));
-        
-    }
-    
-    std::cout << "Disconected" << std::endl;
-    exit(1);
-    
 }
 
 void recive_data(char *msg){
@@ -89,6 +70,31 @@ void recive_data(char *msg){
         
         MSG[seq_num][size_num] = 0;
     }
+    
+}
+
+Mattenger::Mattenger(const char *addr){
+    
+    Socket::create_comm_point(addr);
+    Socket::bind_socket();
+    
+}
+
+void Mattenger::keep_alive(){
+    
+    std::this_thread::sleep_for (std::chrono::seconds(60));
+    
+    while(this -> KEEPALIVE){
+        
+        this -> KEEPALIVE = false;
+        char keep_alive[ICMP_HEAD] = {KEEP_ALIVE};
+        Socket::send(keep_alive, ICMP_HEAD);
+        std::this_thread::sleep_for (std::chrono::seconds(5));
+        
+    }
+    
+    std::cout << "Disconected" << std::endl;
+    exit(1);
     
 }
 
@@ -129,6 +135,18 @@ std::string Mattenger::check_message(){
         recreate_msg += MSG[i++];
     
     return recreate_msg;
+    
+}
+
+void Mattenger::finnish_sending(){
+    
+    char icmp_msg[ICMP_HEAD];
+    
+    icmp_msg[0] = DONE_SENDING;
+    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
+    Socket::send(icmp_msg, ICMP_HEAD);
+    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
+    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
     
 }
 
@@ -185,7 +203,14 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
             }
             printf("\n");
             
-            char end[ICMP_HEAD] = {DATA_END};
+            char end[ICMP_HEAD];
+            
+            if(flag == DATA_END)
+                end[0] = {DATA_END};
+            else if(flag == FILE_NAME)
+                end[0] = {FILE_NAME};
+            else if(flag == FILE_DATA)
+                end[0] = {FILE_DATA};
             Socket::send(end, ICMP_HEAD);
         }
         
@@ -239,15 +264,34 @@ void Mattenger::recive_msg(){
                     
                     if(recreate_msg.empty())
                         break;
-                    print_msg(recreate_msg);
+                    std::cout << recreate_msg << std::endl;
                     recreate_msg.clear();
                     
-                    icmp_msg[0] = DONE_SENDING;
-                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
-                    Socket::send(icmp_msg, ICMP_HEAD);
-                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
-                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
+                    Mattenger::finnish_sending();
+                    break;
                     
+                case FILE_NAME:
+                    recreate_msg = Mattenger::check_message();
+                    
+                    if(recreate_msg.empty())
+                        break;
+                    
+                    FILENAME = recreate_msg;
+                    recreate_msg.clear();
+                    
+                    Mattenger::finnish_sending();
+                    break;
+                    
+                case FILE_DATA:
+                    recreate_msg = Mattenger::check_message();
+                    
+                    if(recreate_msg.empty())
+                        break;
+                    
+                    create_file(recreate_msg);
+                    recreate_msg.clear();
+                    
+                    Mattenger::finnish_sending();
                     break;
                     
                 case RESEND:
@@ -291,19 +335,9 @@ void Mattenger::recive_msg(){
     
 }
 
-void Mattenger::send_file(const char* f_name){
+void Mattenger::send_file(const char* f_name, size_t size){
     
-    short i = 0;
-    while(f_name[i] != 0) i++;
-    
-    short num = i/FRAGMENT_SIZE;
-    if(i % FRAGMENT_SIZE > 0)
-        num++;
-    
-    char name[sizeof(char) + sizeof(short) + i];
-    name[0] = FILE_NAME;
-    memcpy((name + sizeof(char)), &i, sizeof(short));
-    memcpy((name + sizeof(char) + sizeof(short)), f_name, i);
+    Mattenger::send_msg(f_name, size, FILE_NAME, false);
     
     std::ifstream infile;
     infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);
@@ -311,7 +345,7 @@ void Mattenger::send_file(const char* f_name){
     int N = infile.tellg();
     char msg[N];
     infile.read(msg, N);
-    Mattenger::send(msg, N);
+    Mattenger::send_msg(msg, N, FILE_DATA, false);
     
 }
 
