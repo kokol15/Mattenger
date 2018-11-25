@@ -121,7 +121,7 @@ std::string Mattenger::check_message(){
         
         Socket::send(_resend_.c_str(), _resend_.size());
         _resend_.clear();
-        return 0;
+        return "";
     }
     
     i = 0;
