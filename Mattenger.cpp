@@ -159,6 +159,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(MAX_SIZE, sizeof(char));
+    char *_msg_;
     short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
@@ -263,7 +264,9 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case MESSAGE:
-                    recive_data((msg + sizeof(char)));
+                    _msg_ = (char*)calloc(length - sizeof(char), sizeof(char));
+                    memcpy(_msg_, (msg + sizeof(char)), length - sizeof(char));
+                    recive_data(_msg_);
                     break;
             }
     }while(true);
