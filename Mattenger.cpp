@@ -342,7 +342,9 @@ void Mattenger::send_file(const char* f_name, size_t size){
     std::ifstream infile;
     infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);
     
+    infile.seekg (0, infile.end);
     int N = infile.tellg();
+    infile.seekg (0, infile.beg);
     char msg[N];
     infile.read(msg, N);
     Mattenger::send_msg(msg, N, FILE_DATA, false);
