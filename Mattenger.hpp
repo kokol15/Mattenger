@@ -41,6 +41,7 @@ public:
     void start();
     void keep_alive();
     void send_file(const char*);
+    std::string check_message();
     
 };
 

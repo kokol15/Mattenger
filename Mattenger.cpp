@@ -17,7 +17,7 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = true;
-short FRAGMENT_SIZE = 5;
+short FRAGMENT_SIZE = 2;
 short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
@@ -89,6 +89,45 @@ void recive_data(char *msg){
         
         MSG[seq_num][size_num] = 0;
     }
+    
+}
+
+std::string Mattenger::check_message(){
+    
+    char resend[MAX_SIZE] = {0};
+    
+    short i = 0, j = 0;
+    std::string _resend_;
+    std::string recreate_msg;
+    
+    for(j = 0; j < FRAG_TOTAL_NUM; j++){
+        if(MSG[j] == NULL){
+            short tmp = j;
+            tmp++;
+            memcpy((resend + i*sizeof(short)), &tmp, sizeof(short));
+            i++;
+        }
+    }
+    
+    if(i > 0){
+        _resend_.push_back(RESEND);
+        i = 0;
+        while(resend[i] != 0)
+            _resend_.push_back(resend[i++]);
+        _resend_.push_back(0);
+        _resend_.push_back(0);
+        _resend_.push_back(0);
+        _resend_.push_back(0);
+        
+        Socket::send(_resend_.c_str(), _resend_.size());
+        _resend_.clear();
+    }
+    
+    i = 0;
+    while(MSG[i] != NULL)
+        recreate_msg += MSG[i++];
+    
+    return recreate_msg;
     
 }
 
@@ -165,7 +204,6 @@ void Mattenger::recive_msg(){
     short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
-    char resend[MAX_SIZE] = {0};
     char icmp_msg[ICMP_HEAD];
     
     do{
@@ -196,35 +234,7 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case DATA_END:
-                    i = 0;
-                    for(j = 0; j < FRAG_TOTAL_NUM; j++){
-                        if(MSG[j] == NULL){
-                            short tmp = j;
-                            tmp++;
-                            memcpy((resend + i*sizeof(short)), &tmp, sizeof(short));
-                            i++;
-                        }
-                    }
-                    
-                    if(i > 0){
-                        _resend_.push_back(RESEND);
-                        i = 0;
-                        while(resend[i] != 0)
-                            _resend_.push_back(resend[i++]);
-                        _resend_.push_back(0);
-                        _resend_.push_back(0);
-                        _resend_.push_back(0);
-                        _resend_.push_back(0);
-                        
-                        Socket::send(_resend_.c_str(), _resend_.size());
-                        _resend_.clear();
-                        break;
-                    }
-                    
-                    i = 0;
-                    while(MSG[i] != NULL)
-                        recreate_msg += MSG[i++];
-                    
+                    recreate_msg = Mattenger::check_message();
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     
