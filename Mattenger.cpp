@@ -17,7 +17,7 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = true;
-short FRAGMENT_SIZE = 5;
+short FRAGMENT_SIZE = 1;
 short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
@@ -140,7 +140,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 }
                 
                 Socket::send(_msg_, j);
-                std::this_thread::sleep_for (std::chrono::milliseconds(50));
+                std::this_thread::sleep_for (std::chrono::milliseconds(10));
                 i++;
             }
             printf("\n");
@@ -154,7 +154,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
     else{
         char icmp_msg[ICMP_HEAD] = {SYN};
         Socket::send(icmp_msg, ICMP_HEAD);
-        std::this_thread::sleep_for (std::chrono::milliseconds(50));
+        std::this_thread::sleep_for (std::chrono::milliseconds(10));
         send_msg(msg, size, flag, crc_altered);
     }
 }
@@ -243,7 +243,7 @@ void Mattenger::recive_msg(){
                         memcpy(&n, (_MSG_[j] + sizeof(char)), sizeof(short));
                         n += HEAD;
                         Socket::send(_MSG_[j], n);
-                        std::this_thread::sleep_for (std::chrono::milliseconds(50));
+                        std::this_thread::sleep_for (std::chrono::milliseconds(10));
                         memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
                         i++;
                     }
