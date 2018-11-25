@@ -121,6 +121,7 @@ std::string Mattenger::check_message(){
         
         Socket::send(_resend_.c_str(), _resend_.size());
         _resend_.clear();
+        return 0;
     }
     
     i = 0;
@@ -235,6 +236,9 @@ void Mattenger::recive_msg(){
                     
                 case DATA_END:
                     recreate_msg = Mattenger::check_message();
+                    
+                    if(recreate_msg.empty())
+                        break;
                     print_msg(recreate_msg);
                     recreate_msg.clear();
                     
