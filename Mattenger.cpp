@@ -169,7 +169,6 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 num++;
             
             char _msg_[HEAD + FRAGMENT_SIZE];
-            _msg_[0] = MESSAGE;
             memcpy((_msg_ + FRAGMENT_SIZE_INFO), &FRAGMENT_SIZE, sizeof(short));
             memcpy((_msg_ + FRAGMENT_NUM_INFO), &num, sizeof(short));
             
@@ -204,14 +203,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
             }
             printf("\n");
             
-            char end[ICMP_HEAD];
-            
-            if(flag == DATA_END)
-                end[0] = {DATA_END};
-            else if(flag == FILE_NAME)
-                end[0] = {FILE_NAME};
-            else if(flag == FILE_DATA)
-                end[0] = {FILE_DATA};
+            char end[ICMP_HEAD] = {flag};
             Socket::send(end, ICMP_HEAD);
         }
         
@@ -338,7 +330,7 @@ void Mattenger::recive_msg(){
 
 void Mattenger::send_file(const char* f_name, size_t size){
     
-    Mattenger::send_msg(f_name, size, MESSAGE, false);
+    Mattenger::send_msg(f_name, size, FILE_NAME, false);
     
     std::ifstream infile;
     infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);
