@@ -12,7 +12,7 @@ int main() {
     Mattenger matt = Mattenger("192.168.0.104");
     matt.start();
     
-    std::string f_name = "dveLaveRuky.JPG";
+    std::string f_name = "foto.png";
     matt.send_file(f_name.c_str(), f_name.size());
     
     std::string msg;
