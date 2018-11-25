@@ -277,6 +277,7 @@ void Mattenger::recive_msg(){
                     recreate_msg.clear();
                     
                     Mattenger::finnish_sending();
+                    printf("Súbor %s bol doručený\n", FILENAME.c_str());
                     break;
                     
                 case RESEND:
