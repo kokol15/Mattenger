@@ -7,6 +7,7 @@
 //
 
 #include "Mattenger.hpp"
+
 #define MAX_SIZE 65535
 #define A 54059 /* a prime */
 #define B 76963 /* another prime */
@@ -168,7 +169,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 num++;
             
             char _msg_[HEAD + FRAGMENT_SIZE];
-            memcpy(_msg_, &flag, sizeof(char));
+            _msg_[0] = MESSAGE;
             memcpy((_msg_ + FRAGMENT_SIZE_INFO), &FRAGMENT_SIZE, sizeof(short));
             memcpy((_msg_ + FRAGMENT_NUM_INFO), &num, sizeof(short));
             
@@ -337,7 +338,7 @@ void Mattenger::recive_msg(){
 
 void Mattenger::send_file(const char* f_name, size_t size){
     
-    Mattenger::send_msg(f_name, size, FILE_NAME, false);
+    Mattenger::send_msg(f_name, size, MESSAGE, false);
     
     std::ifstream infile;
     infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);

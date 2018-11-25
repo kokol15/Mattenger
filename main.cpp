@@ -21,7 +21,7 @@ int main() {
     
     while(true){
         std::getline(std::cin, msg);
-        matt.send_msg(msg.c_str(), msg.size(), 'M', false);
+        matt.send_msg(msg.c_str(), msg.size(), MESSAGE, false);
     }
     
     return 0;
