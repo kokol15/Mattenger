@@ -245,6 +245,8 @@ void Mattenger::recive_msg(){
                     icmp_msg[0] = DONE_SENDING;
                     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     Socket::send(icmp_msg, ICMP_HEAD);
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
+                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     
                     break;
                     
@@ -268,6 +270,8 @@ void Mattenger::recive_msg(){
                     
                 case DONE_SENDING:
                     SENDING_FINNISHED = true;
+                    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
+                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     break;
                     
                 case KEEP_ALIVE:
