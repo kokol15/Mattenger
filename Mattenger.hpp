@@ -11,12 +11,12 @@
 
 #include "Socket.hpp"
 #define ICMP_HEAD sizeof(char)
-#define HEAD (4 * sizeof(short))
+#define HEAD (sizeof(char) + (4 * sizeof(short)))
 #define RESEND_HEAD (sizeof(char) + sizeof(short))
 #define SYN 'S'
 #define SYN_ACK 'K'
 #define ACK 'A'
-#define DATA 'D'
+#define MESSAGE 'M'
 #define DATA_END 'E'
 #define RESEND 'R'
 #define DONE_SENDING 'F'
@@ -30,7 +30,7 @@ private:
     
 public:
     Mattenger(const char *);
-    void send_msg(const char*, size_t);
+    void send_msg(const char*, size_t, char);
     void recive_msg();
     void start();
     void keep_alive();

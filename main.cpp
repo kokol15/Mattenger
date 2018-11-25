@@ -9,7 +9,7 @@
 #include "Mattenger.hpp"
 
 int main() {
-    Mattenger matt = Mattenger("172.20.10.5");
+    Mattenger matt = Mattenger("127.0.0.1");
     matt.start();
     
     std::string msg;
@@ -18,7 +18,7 @@ int main() {
     
     while(true){
         std::getline(std::cin, msg);
-        matt.send_msg(msg.c_str(), msg.size());
+        matt.send_msg(msg.c_str(), msg.size(), 'M');
     }
     
     return 0;

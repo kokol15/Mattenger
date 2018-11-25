@@ -92,7 +92,7 @@ void recive_data(char *msg){
     
 }
 
-void Mattenger::send_msg(const char *msg, size_t size){
+void Mattenger::send_msg(const char *msg, size_t size, char flag){
     
     if(CONNECTION_ALIVE){
         
@@ -107,14 +107,15 @@ void Mattenger::send_msg(const char *msg, size_t size){
                 num++;
             
             char _msg_[HEAD + FRAGMENT_SIZE];
-            memcpy(_msg_, &FRAGMENT_SIZE, sizeof(short));
-            memcpy((_msg_ + 2*sizeof(short)), &num, sizeof(short));
+            memcpy(_msg_, &flag, sizeof(char));
+            memcpy((_msg_ + sizeof(char)), &FRAGMENT_SIZE, sizeof(short));
+            memcpy((_msg_ + sizeof(char) + 2*sizeof(short)), &num, sizeof(short));
             
             while(i < num){
                 _i = 0;
                 j = HEAD;
                 
-                memcpy((_msg_ + sizeof(short)), &i, sizeof(short));
+                memcpy((_msg_ + sizeof(char) + sizeof(short)), &i, sizeof(short));
                 while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
                 
                 _msg_[j++] = 0;
@@ -151,7 +152,7 @@ void Mattenger::send_msg(const char *msg, size_t size){
         char icmp_msg[ICMP_HEAD] = {SYN};
         Socket::send(icmp_msg, ICMP_HEAD);
         std::this_thread::sleep_for (std::chrono::milliseconds(500));
-        send_msg(msg, size);
+        send_msg(msg, size, flag);
     }
 }
 
@@ -261,8 +262,8 @@ void Mattenger::recive_msg(){
                     this -> KEEPALIVE = true;
                     break;
                     
-                default:
-                    recive_data(msg);
+                case MESSAGE:
+                    recive_data((msg + sizeof(char)));
                     break;
             }
     }while(true);
