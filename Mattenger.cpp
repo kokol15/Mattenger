@@ -18,8 +18,8 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = false;
-short FRAGMENT_SIZE = 2;
-short FRAG_TOTAL_NUM;
+unsigned short FRAGMENT_SIZE = 60000;
+unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
 std::string FILENAME;
@@ -45,14 +45,14 @@ unsigned short computeCRC(const char* s){
 
 void recive_data(char *msg){
     
-    short size_num = 0, seq_num = 0, crc = 0, _crc_ = 0;
+    unsigned short size_num = 0, seq_num = 0, crc = 0, _crc_ = 0;
     
     if(CONNECTION_ALIVE){
         
-        memcpy(&size_num, (msg + FRAGMENT_SIZE_INFO), sizeof(short));
-        memcpy(&seq_num, (msg + FRAGMENT_SEQNUM_INFO), sizeof(short));
-        memcpy(&FRAG_TOTAL_NUM, (msg + FRAGMENT_NUM_INFO), sizeof(short));
-        memcpy(&crc, (msg + FRAGMENT_CRC_INFO), sizeof(short));
+        memcpy(&size_num, (msg + FRAGMENT_SIZE_INFO), sizeof(unsigned short));
+        memcpy(&seq_num, (msg + FRAGMENT_SEQNUM_INFO), sizeof(unsigned short));
+        memcpy(&FRAG_TOTAL_NUM, (msg + FRAGMENT_NUM_INFO), sizeof(unsigned short));
+        memcpy(&crc, (msg + FRAGMENT_CRC_INFO), sizeof(unsigned short));
         
         _crc_ = computeCRC((msg + HEAD));
         if(_crc_ != crc){
@@ -97,15 +97,15 @@ std::string Mattenger::check_message(){
     
     char resend[MAX_SIZE] = {0};
     
-    short i = 0, j = 0;
+    unsigned short i = 0, j = 0;
     std::string _resend_;
     std::string recreate_msg;
     
     for(j = 0; j < FRAG_TOTAL_NUM; j++){
         if(MSG[j] == NULL){
-            short tmp = j;
+            unsigned short tmp = j;
             tmp++;
-            memcpy((resend + i*sizeof(short)), &tmp, sizeof(short));
+            memcpy((resend + i*sizeof(unsigned short)), &tmp, sizeof(unsigned short));
             i++;
         }
     }
@@ -154,28 +154,28 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
             
             SENDING_FINNISHED = false;
             
-            short i = 0, k = 0, j, _i;
+            unsigned short i = 0, k = 0, j, _i;
             
-            short num = size/FRAGMENT_SIZE;
+            unsigned short num = size/FRAGMENT_SIZE;
             if(size % FRAGMENT_SIZE > 0)
                 num++;
             
             char _msg_[HEAD + FRAGMENT_SIZE];
-            memcpy((_msg_ + FRAGMENT_SIZE_INFO), &FRAGMENT_SIZE, sizeof(short));
-            memcpy((_msg_ + FRAGMENT_NUM_INFO), &num, sizeof(short));
+            memcpy((_msg_ + FRAGMENT_SIZE_INFO), &FRAGMENT_SIZE, sizeof(unsigned short));
+            memcpy((_msg_ + FRAGMENT_NUM_INFO), &num, sizeof(unsigned short));
             
             while(i < num){
                 _i = 0;
                 j = HEAD;
                 
-                memcpy((_msg_ + FRAGMENT_SEQNUM_INFO), &i, sizeof(short));
+                memcpy((_msg_ + FRAGMENT_SEQNUM_INFO), &i, sizeof(unsigned short));
                 while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
                 
                 _msg_[j++] = 0;
                 //printf("%s|", (_msg_ + HEAD));
                 
                 unsigned short crc = computeCRC((_msg_ + HEAD));
-                memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(short));
+                memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
                 _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
@@ -212,7 +212,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(MAX_SIZE, sizeof(char));
-    short i = 0, j = 0, n = 0;
+    unsigned short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
     char icmp_msg[ICMP_HEAD];
@@ -282,14 +282,14 @@ void Mattenger::recive_msg(){
                 case RESEND:
                     i = 1;
                     j = 0;
-                    memcpy(&j, (msg + sizeof(char)), sizeof(short));
+                    memcpy(&j, (msg + sizeof(char)), sizeof(unsigned short));
                     while(j != 0){
                         j--;
-                        memcpy(&n, (_MSG_[j] + FRAGMENT_SIZE_INFO), sizeof(short));
+                        memcpy(&n, (_MSG_[j] + FRAGMENT_SIZE_INFO), sizeof(unsigned short));
                         n += HEAD;
                         Socket::send(_MSG_[j], n);
                         std::this_thread::sleep_for (std::chrono::milliseconds(50));
-                        memcpy(&j, (msg + i*sizeof(short) + sizeof(char)), sizeof(short));
+                        memcpy(&j, (msg + i*sizeof(unsigned short) + sizeof(char)), sizeof(unsigned short));
                         i++;
                     }
                     
