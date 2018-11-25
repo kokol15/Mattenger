@@ -122,7 +122,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
                 printf("%s|", (_msg_ + HEAD));
                 
                 unsigned short crc = computeCRC((_msg_ + HEAD));
-                memcpy((_msg_ + 3*sizeof(short)), &crc, sizeof(short));
+                memcpy((_msg_ + sizeof(char) + 3*sizeof(short)), &crc, sizeof(short));
                 
                 _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
