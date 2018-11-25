@@ -36,7 +36,7 @@ private:
     
 public:
     Mattenger(const char *);
-    void send_msg(const char*, size_t, char);
+    void send_msg(const char*, size_t, char, bool);
     void recive_msg();
     void start();
     void keep_alive();

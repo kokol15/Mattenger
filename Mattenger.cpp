@@ -92,7 +92,10 @@ void recive_data(char *msg){
     
 }
 
-void Mattenger::send_msg(const char *msg, size_t size, char flag){
+void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_altered){
+    
+    if(crc_altered)
+        ALTER_CRC = true;
     
     if(CONNECTION_ALIVE){
         
@@ -128,7 +131,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
                 _MSG_[i][j] = 0;
                 
-                if(i == (num - 1))
+                if(i == (num - 1) && crc_altered)
                     ALTER_CRC = true;
                 if(ALTER_CRC){
                     int pos = rand() % _i;
@@ -152,7 +155,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
         char icmp_msg[ICMP_HEAD] = {SYN};
         Socket::send(icmp_msg, ICMP_HEAD);
         std::this_thread::sleep_for (std::chrono::milliseconds(500));
-        send_msg(msg, size, flag);
+        send_msg(msg, size, flag, crc_altered);
     }
 }
 
