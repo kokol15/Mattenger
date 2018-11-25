@@ -77,7 +77,7 @@ Mattenger::Mattenger(const char *addr){
 
 void Mattenger::keep_alive(){
     
-    std::this_thread::sleep_for (std::chrono::seconds(60));
+    std::this_thread::sleep_for (std::chrono::seconds(120));
     
     while(this -> KEEPALIVE){
         
@@ -172,7 +172,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
                 
                 _msg_[j++] = 0;
-                printf("%s|", (_msg_ + HEAD));
+                //printf("%s|", (_msg_ + HEAD));
                 
                 unsigned short crc = computeCRC((_msg_ + HEAD));
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(short));
@@ -323,6 +323,7 @@ void Mattenger::recive_msg(){
 void Mattenger::send_file(const char* f_name, size_t size){
     
     Mattenger::send_msg(f_name, size, FILE_NAME, false);
+    std::this_thread::sleep_for (std::chrono::milliseconds(50));
     
     std::ifstream infile;
     infile.open(f_name, std::ios::binary | std::ios::ate | std::ios::in);
@@ -333,6 +334,7 @@ void Mattenger::send_file(const char* f_name, size_t size){
     char msg[N];
     infile.read(msg, N);
     Mattenger::send_msg(msg, N, FILE_DATA, false);
+    printf("Súbor %s poslaný\n", f_name);
     
 }
 
