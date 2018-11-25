@@ -73,10 +73,10 @@ void recive_data(char *msg){
     
     if(CONNECTION_ALIVE){
         
-        memcpy(&size_num, msg, sizeof(short));
-        memcpy(&seq_num, (msg + sizeof(short)), sizeof(short));
-        memcpy(&FRAG_TOTAL_NUM, (msg + 2*sizeof(short)), sizeof(short));
-        memcpy(&crc, (msg + 3*sizeof(short)), sizeof(short));
+        memcpy(&size_num, (msg + FRAGMENT_SIZE_INFO), sizeof(short));
+        memcpy(&seq_num, (msg + FRAGMENT_SEQNUM_INFO), sizeof(short));
+        memcpy(&FRAG_TOTAL_NUM, (msg + FRAGMENT_NUM_INFO), sizeof(short));
+        memcpy(&crc, (msg + FRAGMENT_CRC_INFO), sizeof(short));
         
         _crc_ = computeCRC((msg + HEAD));
         if(_crc_ != crc){
@@ -108,21 +108,21 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
             
             char _msg_[HEAD + FRAGMENT_SIZE];
             memcpy(_msg_, &flag, sizeof(char));
-            memcpy((_msg_ + sizeof(char)), &FRAGMENT_SIZE, sizeof(short));
-            memcpy((_msg_ + sizeof(char) + 2*sizeof(short)), &num, sizeof(short));
+            memcpy((_msg_ + FRAGMENT_SIZE_INFO), &FRAGMENT_SIZE, sizeof(short));
+            memcpy((_msg_ + FRAGMENT_NUM_INFO), &num, sizeof(short));
             
             while(i < num){
                 _i = 0;
                 j = HEAD;
                 
-                memcpy((_msg_ + sizeof(char) + sizeof(short)), &i, sizeof(short));
+                memcpy((_msg_ + FRAGMENT_SEQNUM_INFO), &i, sizeof(short));
                 while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
                 
                 _msg_[j++] = 0;
                 printf("%s|", (_msg_ + HEAD));
                 
                 unsigned short crc = computeCRC((_msg_ + HEAD));
-                memcpy((_msg_ + sizeof(char) + 3*sizeof(short)), &crc, sizeof(short));
+                memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(short));
                 
                 _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
@@ -159,7 +159,6 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag){
 void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(MAX_SIZE, sizeof(char));
-    char *_msg_;
     short i = 0, j = 0, n = 0;
     std::string recreate_msg;
     std::string _resend_;
@@ -264,9 +263,7 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case MESSAGE:
-                    _msg_ = (char*)calloc(length - sizeof(char), sizeof(char));
-                    memcpy(_msg_, (msg + sizeof(char)), length - sizeof(char));
-                    recive_data(_msg_);
+                    recive_data(msg);
                     break;
             }
     }while(true);

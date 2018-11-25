@@ -12,6 +12,12 @@
 #include "Socket.hpp"
 #define ICMP_HEAD sizeof(char)
 #define HEAD (sizeof(char) + (4 * sizeof(short)))
+
+#define FRAGMENT_SIZE_INFO (sizeof(char))
+#define FRAGMENT_SEQNUM_INFO (sizeof(char) + sizeof(short))
+#define FRAGMENT_NUM_INFO (sizeof(char) + 2*sizeof(short))
+#define FRAGMENT_CRC_INFO (sizeof(char) + 3*sizeof(short))
+
 #define RESEND_HEAD (sizeof(char) + sizeof(short))
 #define SYN 'S'
 #define SYN_ACK 'K'
