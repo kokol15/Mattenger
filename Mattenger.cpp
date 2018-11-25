@@ -24,12 +24,6 @@ char **MSG;
 char **_MSG_;
 std::string FILENAME;
 
-/*ssize_t get_size(char *msg){
-    ssize_t i = 0;
-    while(msg[i] != 0) i++;
-    return i;
-}*/
-
 void create_file(std::string f_data){
     
     std::ofstream outfile;
@@ -146,8 +140,6 @@ void Mattenger::finnish_sending(){
     icmp_msg[0] = DONE_SENDING;
     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
     Socket::send(icmp_msg, ICMP_HEAD);
-    _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
-    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
     
 }
 
@@ -320,7 +312,7 @@ void Mattenger::recive_msg(){
                     this -> KEEPALIVE = true;
                     break;
                     
-                case MESSAGE:
+                default:
                     recive_data(msg);
                     break;
             }
