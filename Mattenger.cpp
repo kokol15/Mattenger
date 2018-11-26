@@ -139,6 +139,7 @@ void Mattenger::finnish_sending(){
     
     icmp_msg[0] = DONE_SENDING;
     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
+    FILENAME.clear();
     Socket::send(icmp_msg, ICMP_HEAD);
     
 }
@@ -245,7 +246,7 @@ void Mattenger::recive_msg(){
                     CONNECTION_ALIVE = true;
                     break;
                     
-                case DATA_END:
+                case MESSAGE:
                     recreate_msg = Mattenger::check_message();
                     
                     if(recreate_msg.empty())
@@ -295,7 +296,10 @@ void Mattenger::recive_msg(){
                         i++;
                     }
                     
-                    icmp_msg[0] = {DATA_END};
+                    if(FILENAME.empty())
+                        icmp_msg[0] = {DATA_END};
+                    else
+                        icmp_msg[0] = {FILE_DATA};
                     Socket::send(icmp_msg, ICMP_HEAD);
                     break;
                     
