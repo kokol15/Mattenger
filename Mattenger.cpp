@@ -18,6 +18,8 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = false;
+bool FILE_SEND = false;
+bool FILENAME_SEND = false;
 unsigned short FRAGMENT_SIZE = 250;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
@@ -153,6 +155,13 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
         if(SENDING_FINNISHED){
             
             SENDING_FINNISHED = false;
+            FILENAME_SEND = false;
+            FILE_SEND = false;
+            
+            if(flag == FILE_NAME)
+                FILENAME_SEND = true;
+            else if(flag == FILE_DATA)
+                FILENAME_SEND = false;
             
             unsigned short i = 0, k = 0, j, _i;
             
@@ -296,10 +305,13 @@ void Mattenger::recive_msg(){
                         i++;
                     }
                     
-                    if(FILENAME.empty())
-                        icmp_msg[0] = {MESSAGE};
-                    else
+                    if(FILE_SEND)
                         icmp_msg[0] = {FILE_DATA};
+                    else if(FILENAME_SEND)
+                        icmp_msg[0] = {FILE_NAME};
+                    else
+                        icmp_msg[0] = {MESSAGE};
+                    
                     Socket::send(icmp_msg, ICMP_HEAD);
                     break;
                     
