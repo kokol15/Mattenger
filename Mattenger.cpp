@@ -18,7 +18,7 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = false;
-unsigned short FRAGMENT_SIZE = 200;
+unsigned short FRAGMENT_SIZE = 250;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
