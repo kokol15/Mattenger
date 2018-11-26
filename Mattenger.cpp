@@ -139,7 +139,6 @@ void Mattenger::finnish_sending(){
     
     icmp_msg[0] = DONE_SENDING;
     MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
-    FILENAME.clear();
     Socket::send(icmp_msg, ICMP_HEAD);
     
 }
@@ -280,6 +279,7 @@ void Mattenger::recive_msg(){
                     
                     Mattenger::finnish_sending();
                     printf("Súbor %s bol doručený\n", FILENAME.c_str());
+                    FILENAME.clear();
                     break;
                     
                 case RESEND:
@@ -297,7 +297,7 @@ void Mattenger::recive_msg(){
                     }
                     
                     if(FILENAME.empty())
-                        icmp_msg[0] = {DATA_END};
+                        icmp_msg[0] = {MESSAGE};
                     else
                         icmp_msg[0] = {FILE_DATA};
                     Socket::send(icmp_msg, ICMP_HEAD);
