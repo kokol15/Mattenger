@@ -18,7 +18,7 @@ bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
 bool KEEPALIVE = true;
 bool ALTER_CRC = false;
-unsigned short FRAGMENT_SIZE = 60000;
+unsigned short FRAGMENT_SIZE = 100;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
@@ -169,7 +169,8 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 j = HEAD;
                 
                 memcpy((_msg_ + FRAGMENT_SEQNUM_INFO), &i, sizeof(unsigned short));
-                while( _i++ < FRAGMENT_SIZE && k != size) _msg_[j++] = msg[k++];
+                while( _i++ < FRAGMENT_SIZE && k < size)
+                    _msg_[j++] = msg[k++];
                 
                 _msg_[j++] = 0;
                 //printf("%s|", (_msg_ + HEAD));

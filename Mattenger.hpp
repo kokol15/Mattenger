@@ -13,7 +13,7 @@
 #define ICMP_HEAD sizeof(char)
 #define HEAD (4 * sizeof(short))
 
-#define FRAGMENT_SIZE_INFO (0)
+#define FRAGMENT_SIZE_INFO 0
 #define FRAGMENT_SEQNUM_INFO (sizeof(short))
 #define FRAGMENT_NUM_INFO (2*sizeof(short))
 #define FRAGMENT_CRC_INFO (3*sizeof(short))
