@@ -20,7 +20,7 @@ bool KEEPALIVE = true;
 bool ALTER_CRC = false;
 bool FILE_SEND = false;
 bool FILENAME_SEND = false;
-unsigned short FRAGMENT_SIZE = 250;
+unsigned short FRAGMENT_SIZE = 200;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
@@ -114,9 +114,7 @@ std::string Mattenger::check_message(){
     
     if(i > 0){
         _resend_.push_back(RESEND);
-        i = 0;
-        while(resend[i] != 0)
-            _resend_.push_back(resend[i++]);
+        _resend_ += resend;
         _resend_.push_back(0);
         _resend_.push_back(0);
         _resend_.push_back(0);
