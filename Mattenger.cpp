@@ -102,34 +102,24 @@ std::string Mattenger::check_message(){
     char resend[MAX_SIZE] = {0};
     
     unsigned short i = 0, j = 0;
-    std::string _resend_;
     std::string recreate_msg;
     
+    resend[0] = RESEND;
     for(j = 0; j < FRAG_TOTAL_NUM; j++){
         if(MSG[j] == NULL){
             unsigned short tmp = j;
             tmp++;
-            memcpy((resend + i*sizeof(unsigned short)), &tmp, sizeof(unsigned short));
+            memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), &tmp, sizeof(unsigned short));
             i++;
         }
+        else
+            recreate_msg += MSG[j];
     }
     
     if(i > 0){
-        _resend_.push_back(RESEND);
-        _resend_ += resend;
-        _resend_.push_back(0);
-        _resend_.push_back(0);
-        _resend_.push_back(0);
-        _resend_.push_back(0);
-        
-        Socket::send(_resend_.c_str(), _resend_.size());
-        _resend_.clear();
+        Socket::send(resend, i + sizeof(char) + sizeof(short));
         return "";
     }
-    
-    i = 0;
-    while(MSG[i] != NULL)
-        recreate_msg += MSG[i++];
     
     return recreate_msg;
     
