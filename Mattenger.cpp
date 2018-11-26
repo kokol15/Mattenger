@@ -161,7 +161,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
             if(flag == FILE_NAME)
                 FILENAME_SEND = true;
             else if(flag == FILE_DATA)
-                FILENAME_SEND = false;
+                FILE_SEND = true;
             
             unsigned short i = 0, k = 0, j, _i;
             
