@@ -20,7 +20,7 @@ bool KEEPALIVE = true;
 bool ALTER_CRC = false;
 bool FILE_SEND = false;
 bool FILENAME_SEND = false;
-unsigned short FRAGMENT_SIZE = 200;
+unsigned short FRAGMENT_SIZE = 50;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
@@ -70,10 +70,12 @@ void recive_data(char *msg){
     
 }
 
-Mattenger::Mattenger(const char *addr){
+Mattenger::Mattenger(const char *addr, int port, int frag_size){
     
-    Socket::create_comm_point(addr);
+    
+    Socket::create_comm_point(addr, port);
     Socket::bind_socket();
+    FRAGMENT_SIZE = frag_size;
     
 }
 

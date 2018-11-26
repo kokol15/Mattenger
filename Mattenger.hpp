@@ -36,7 +36,7 @@ private:
     bool KEEPALIVE = true;
     
 public:
-    Mattenger(const char *);
+    Mattenger(const char *, int, int);
     void send_msg(const char*, size_t, char, bool);
     void recive_msg();
     void start();

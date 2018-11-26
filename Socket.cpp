@@ -27,7 +27,7 @@ void Socket::print_error(std::string err){
     
 }
 
-void Socket::create_comm_point(const char *address){
+void Socket::create_comm_point(const char *address, int port){
     
     struct sockaddr_in s_addr;
     struct sockaddr_in r_addr;
@@ -35,14 +35,14 @@ void Socket::create_comm_point(const char *address){
     memset(&r_addr, 0, sizeof(r_addr));
     
     s_addr.sin_family = AF_INET;
-    s_addr.sin_port = htons(50050);
+    s_addr.sin_port = htons(port);
     if(strcmp(address, "127.0.0.1") == 0)
         s_addr.sin_addr.s_addr = INADDR_ANY;
     else
         s_addr.sin_addr.s_addr = inet_addr(address);
     
     r_addr.sin_family = AF_INET;
-    r_addr.sin_port = htons(50050);
+    r_addr.sin_port = htons(port);
     r_addr.sin_addr.s_addr = INADDR_ANY;
     
     this -> send_address = s_addr;

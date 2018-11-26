@@ -32,7 +32,7 @@ private:
 public:
     Socket();
     void print_error(std::string err);
-    void create_comm_point(const char *);
+    void create_comm_point(const char *, int);
     void bind_socket();
     void send(const char*, size_t);
     struct sockaddr_in get_send_address();
