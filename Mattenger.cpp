@@ -35,12 +35,13 @@ void create_file(std::string f_data){
     
 }
 
-unsigned short computeCRC(const char* s){
+unsigned short computeCRC(const char* s, unsigned short n){
     
+    unsigned short i = 0;
     unsigned short h = FIRST;
-    while (*s) {
-        h = (h * A) ^ (s[0] * B);
-        s++;
+    while (i < n) {
+        h = (h * A) ^ (s[i] * B);
+        i++;
     }
     return (h % MAX_SIZE);
 }
@@ -56,7 +57,7 @@ void recive_data(char *msg){
         memcpy(&FRAG_TOTAL_NUM, (msg + FRAGMENT_NUM_INFO), sizeof(unsigned short));
         memcpy(&crc, (msg + FRAGMENT_CRC_INFO), sizeof(unsigned short));
         
-        _crc_ = computeCRC((msg + HEAD));
+        _crc_ = computeCRC((msg + HEAD), size_num);
         if(_crc_ != crc){
             std::cout << "Message has been altered" << std::endl;
             return;
@@ -172,7 +173,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                     _msg_[j++] = msg[k++];
                 
                 
-                unsigned short crc = computeCRC((_msg_ + HEAD));
+                unsigned short crc = computeCRC((_msg_ + HEAD), j);
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
                 _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
