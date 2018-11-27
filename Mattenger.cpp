@@ -45,33 +45,6 @@ unsigned short computeCRC(const char* s, unsigned short n){
         i++;
     }
     return (h % MAX_SIZE);
-    
-    /*unsigned char i;
-    unsigned short data;
-    unsigned short crc = 0xffff;
-    
-    if (n == 0)
-        return (~crc);
-    
-    do
-    {
-        for (i=0, data=(unsigned int)0xff & *s++;
-             i < 8;
-             i++, data >>= 1)
-        {
-            if ((crc & 0x0001) ^ (data & 0x0001))
-                crc = (crc >> 1) ^ POLY;
-            else  crc >>= 1;
-        }
-    } while (--n);
-    
-    crc = crc % MAX_SIZE;
-    crc = ~crc;
-    data = crc;
-    crc = (crc << 8) | (data >> 8 & 0xff);
-    
-    return (crc);*/
-    
 }
 
 void recive_data(char *msg){
@@ -130,15 +103,16 @@ std::string Mattenger::check_message(){
     
     char resend[MAX_SIZE] = {0};
     
-    unsigned short i = 0, j = 0;
+    unsigned short i = 0, j = 0, size = 0;
     std::string recreate_msg;
     
     resend[0] = RESEND;
     for(j = 0; j < FRAG_TOTAL_NUM; j++){
         if(MSG[j] == NULL){
+            size = i*sizeof(unsigned short) + sizeof(char);
             unsigned short tmp = j;
             tmp++;
-            memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), &tmp, sizeof(unsigned short));
+            memcpy((resend + size), &tmp, sizeof(unsigned short));
             i++;
         }
         else
@@ -146,7 +120,8 @@ std::string Mattenger::check_message(){
     }
     
     if(i > 0){
-        Socket::send(resend, i + sizeof(char) + sizeof(short));
+        memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), 0, sizeof(unsigned short));
+        Socket::send(resend, i*sizeof(unsigned short) + sizeof(char));
         return "";
     }
     
