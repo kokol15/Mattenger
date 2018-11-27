@@ -13,6 +13,7 @@
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */
 #define FIRST 37 /* also prime */
+#define POLY 0x8408
 
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
@@ -38,12 +39,39 @@ void create_file(std::string f_data){
 unsigned short computeCRC(const char* s, unsigned short n){
     
     unsigned short i = 0;
-    unsigned short h = FIRST;
+    unsigned long h = FIRST;
     while (i < n) {
         h = (h * A) ^ (s[i] * B);
         i++;
     }
     return (h % MAX_SIZE);
+    
+    /*unsigned char i;
+    unsigned short data;
+    unsigned short crc = 0xffff;
+    
+    if (n == 0)
+        return (~crc);
+    
+    do
+    {
+        for (i=0, data=(unsigned int)0xff & *s++;
+             i < 8;
+             i++, data >>= 1)
+        {
+            if ((crc & 0x0001) ^ (data & 0x0001))
+                crc = (crc >> 1) ^ POLY;
+            else  crc >>= 1;
+        }
+    } while (--n);
+    
+    crc = crc % MAX_SIZE;
+    crc = ~crc;
+    data = crc;
+    crc = (crc << 8) | (data >> 8 & 0xff);
+    
+    return (crc);*/
+    
 }
 
 void recive_data(char *msg){
