@@ -204,7 +204,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 unsigned short crc = computeCRC((_msg_ + HEAD), j - HEAD);
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
-                _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + sizeof(char));
+                _MSG_[i] = (char*)calloc(1, (j + 1)*sizeof(char));
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
                 _MSG_[i][j] = 0;
                 
@@ -216,7 +216,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                     ALTER_CRC = false;
                 }
                 
-                Socket::send(_msg_, j - 1);
+                Socket::send(_msg_, j);
                 std::this_thread::sleep_for (std::chrono::milliseconds(50));
                 i++;
             }
