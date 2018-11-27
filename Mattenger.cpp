@@ -175,7 +175,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 unsigned short crc = computeCRC((_msg_ + HEAD), j);
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
-                _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + 1);
+                _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + sizeof(char));
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
                 _MSG_[i][j] = 0;
                 
