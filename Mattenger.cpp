@@ -120,7 +120,7 @@ std::string Mattenger::check_message(){
     }
     
     if(i > 0){
-        memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), 0, sizeof(unsigned short));
+        //memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), 0, sizeof(unsigned short));
         Socket::send(resend, i*sizeof(unsigned short) + sizeof(char));
         return "";
     }
