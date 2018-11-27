@@ -39,7 +39,7 @@ void create_file(std::string f_data){
 unsigned short computeCRC(const char* s, unsigned short n){
     
     unsigned short i = 0;
-    unsigned long h = FIRST;
+    unsigned short h = FIRST;
     while (i < n) {
         h = (h * A) ^ (s[i] * B);
         i++;
@@ -200,7 +200,7 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                     _msg_[j++] = msg[k++];
                 
                 memcpy((_msg_ + FRAGMENT_SIZE_INFO), &j, sizeof(unsigned short));
-                unsigned short crc = computeCRC((_msg_ + HEAD), j);
+                unsigned short crc = computeCRC((_msg_ + HEAD), j - HEAD);
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
                 _MSG_[i] = (char*)calloc(1, sizeof(_msg_) + sizeof(char));
