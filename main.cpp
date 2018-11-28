@@ -29,7 +29,7 @@ int main() {
     Mattenger matt = Mattenger("192.168.0.104", port, frag_size);
     matt.start();
     
-    std::string f_name = "hello.txt";
+    std::string f_name = "dveLaveRuky.JPG";
     matt.send_file(f_name.c_str(), f_name.size());
     
     std::string msg;
