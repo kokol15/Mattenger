@@ -86,7 +86,7 @@ void recive_data(char *msg){
         
         MSG[seq_num] = (char*)calloc(size_num, sizeof(char));
         memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
-        //MSG_LEN[seq_num] = size_num;
+        MSG_LEN[seq_num] = size_num;
     }
     
 }
