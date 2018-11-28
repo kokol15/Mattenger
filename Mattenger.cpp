@@ -28,17 +28,30 @@ char **_MSG_;
 short MSG_LEN[MAX_SIZE];
 std::string FILENAME;
 
-void create_file(std::string f_data){
+void save_file_name(){
+    
+    unsigned short i = 0, j = 0;
+    while(MSG[i] != NULL){
+        j = 0;
+        while(j < MSG_LEN[i])
+            FILENAME.push_back(MSG[i][j++]);
+        i++;
+    }
+    FILENAME.push_back(0);
+}
 
-//    unsigned long n = 0, i = 0;
-//    while(MSG[i] != NULL) n += MSG_LEN[i];
+void create_file(){
     
     std::ofstream outfile;
     outfile.open(FILENAME, std::ios::out | std::ios::trunc );
-//    i = 0;
-//    while(i < n)
-//        outfile << f_data[i++];
-    outfile << f_data;
+    
+    unsigned short i = 0, j = 0;
+    while(MSG[i] != NULL){
+        j = 0;
+        while(j < MSG_LEN[i])
+            outfile << MSG[i][j++];
+        i++;
+    }
     outfile.close();
     
 }
@@ -105,12 +118,11 @@ void Mattenger::keep_alive(){
     
 }
 
-std::string Mattenger::check_message(){
+bool Mattenger::check_message(){
     
     char resend[MAX_SIZE] = {0};
     
     unsigned short i = 0, j = 0, size = 0;
-    std::string recreate_msg;
     
     resend[0] = RESEND;
     for(j = 0; j < FRAG_TOTAL_NUM; j++){
@@ -121,21 +133,15 @@ std::string Mattenger::check_message(){
             memcpy((resend + size), &tmp, sizeof(unsigned short));
             i++;
         }
-        else{
-            recreate_msg += MSG[j];
-            //unsigned short k = 0;
-            //while(k < MSG_LEN[j])
-            //    recreate_msg.push_back(MSG[j][k]);
-        }
     }
     
     if(i > 0){
         //memcpy((resend + i*sizeof(unsigned short) + sizeof(char)), 0, sizeof(unsigned short));
         Socket::send(resend, i*sizeof(unsigned short) + sizeof(char));
-        return "";
+        return false;
     }
     
-    return recreate_msg;
+    return true;
     
 }
 
@@ -257,10 +263,10 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case MESSAGE:
-                    recreate_msg = Mattenger::check_message();
                     
-                    if(recreate_msg.empty())
+                    if(!Mattenger::check_message())
                         break;
+                    
                     std::cout << recreate_msg << std::endl;
                     recreate_msg.clear();
                     
@@ -268,25 +274,21 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case FILE_NAME:
-                    recreate_msg = Mattenger::check_message();
                     
-                    if(recreate_msg.empty())
+                    if(!Mattenger::check_message())
                         break;
                     
-                    FILENAME = recreate_msg;
-                    recreate_msg.clear();
+                    save_file_name();
                     
                     Mattenger::finnish_sending();
                     break;
                     
                 case FILE_DATA:
-                    recreate_msg = Mattenger::check_message();
                     
-                    if(recreate_msg.empty())
+                    if(!Mattenger::check_message())
                         break;
                     
-                    create_file(recreate_msg);
-                    recreate_msg.clear();
+                    create_file();
                     
                     Mattenger::finnish_sending();
                     printf("Súbor %s bol doručený\n", FILENAME.c_str());
