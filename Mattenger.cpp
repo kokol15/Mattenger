@@ -28,6 +28,20 @@ char **_MSG_;
 short MSG_LEN[MAX_SIZE];
 std::string FILENAME;
 
+
+void print_msg(){
+    
+    unsigned short i = 0, j = 0;
+    while(MSG[i] != NULL){
+        j = 0;
+        while(j < MSG_LEN[i])
+            std::cout << MSG[i][j++];
+        i++;
+    }
+    std::cout << std::endl;
+    
+}
+
 void save_file_name(){
     
     unsigned short i = 0, j = 0;
@@ -267,8 +281,7 @@ void Mattenger::recive_msg(){
                     if(!Mattenger::check_message())
                         break;
                     
-                    std::cout << recreate_msg << std::endl;
-                    recreate_msg.clear();
+                    print_msg();
                     
                     Mattenger::finnish_sending();
                     break;
