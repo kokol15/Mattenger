@@ -310,7 +310,6 @@ void Mattenger::recive_msg(){
                 case DONE_SENDING:
                     SENDING_FINNISHED = true;
                     _MSG_ = (char**)calloc(MAX_SIZE, sizeof(char*));
-                    MSG = (char**)calloc(MAX_SIZE, sizeof(char*));
                     break;
                     
                 case KEEP_ALIVE:
@@ -350,21 +349,10 @@ void Mattenger::send_file(const char* f_name, size_t size){
 
 void Mattenger::start(){
     
-    /*std::cout << "Velkost posielaného fragmentu?" << std::endl;
-    scanf("%hu", &FRAGMENT_SIZE);
-    
-    std::string choice = 0;
-    std::cout << "Chces zaslat chybný fragment? [0 - NIE, 1 - ANO]" << std::endl;
-    std::cin >> choice;
-    if(choice == "1")
-        ALTER_CRC = true;*/
-    
     std::thread t1(&Mattenger::recive_msg, this);
     t1.detach();
     
     std::thread t2(&Mattenger::keep_alive, this);
     t2.detach();
-    
-    //Mattenger::send_file("hello.txt");
     
 }
