@@ -13,6 +13,7 @@
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */
 #define FIRST 37 /* also prime */
+#define POLY 0x8408
 
 bool CONNECTION_ALIVE = false;
 bool SENDING_FINNISHED = true;
@@ -24,15 +25,19 @@ unsigned short FRAGMENT_SIZE = 50;
 unsigned short FRAG_TOTAL_NUM;
 char **MSG;
 char **_MSG_;
+short MSG_LEN[MAX_SIZE];
 std::string FILENAME;
 
-void create_file(std::string f_data, unsigned long n){
+void create_file(std::string f_data){
+
+    unsigned long n = 0, i = 0;
+    while(MSG[i] != NULL) n += MSG_LEN[i];
     
     std::ofstream outfile;
     outfile.open(FILENAME, std::ios::out | std::ios::trunc );
-    unsigned long i = 0;
+    i = 0;
     while(i < n)
-        outfile << f_data[i];
+        outfile << f_data[i++];
     outfile.close();
     
 }
@@ -65,8 +70,9 @@ void recive_data(char *msg){
             return;
         }
         
-        MSG[seq_num] = (char*)calloc(sizeof(msg), sizeof(char));
-        memcpy(MSG[seq_num], msg, sizeof(msg)*sizeof(char));
+        MSG[seq_num] = (char*)calloc(size_num, sizeof(char));
+        memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
+        MSG_LEN[seq_num] = size_num;
     }
     
 }
@@ -98,29 +104,26 @@ void Mattenger::keep_alive(){
     
 }
 
-std::string Mattenger::check_message(unsigned long *size){
+std::string Mattenger::check_message(){
     
     char resend[MAX_SIZE] = {0};
     
-    unsigned short i = 0, j = 0, shift = 0;
+    unsigned short i = 0, j = 0, size = 0;
     std::string recreate_msg;
     
     resend[0] = RESEND;
     for(j = 0; j < FRAG_TOTAL_NUM; j++){
         if(MSG[j] == NULL){
-            shift = i*sizeof(unsigned short) + sizeof(char);
+            size = i*sizeof(unsigned short) + sizeof(char);
             unsigned short tmp = j;
             tmp++;
-            memcpy((resend + shift), &tmp, sizeof(unsigned short));
+            memcpy((resend + size), &tmp, sizeof(unsigned short));
             i++;
         }
         else{
-            unsigned short n, k = HEAD;
-            memcpy(&n, (MSG[j] + FRAGMENT_SIZE_INFO), sizeof(unsigned short));
-            while(k < n + HEAD){
+            unsigned short k = 0;
+            while(k < MSG_LEN[j])
                 recreate_msg.push_back(MSG[j][k]);
-                *(size) = *(size) + 1;
-            }
         }
     }
     
@@ -184,8 +187,9 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
                 unsigned short crc = computeCRC((_msg_ + HEAD), j - HEAD);
                 memcpy((_msg_ + FRAGMENT_CRC_INFO), &crc, sizeof(unsigned short));
                 
-                _MSG_[i] = (char*)calloc(1, j*sizeof(char));
+                _MSG_[i] = (char*)calloc(1, (j + 1)*sizeof(char));
                 memcpy(_MSG_[i], _msg_, j*sizeof(char));
+                _MSG_[i][j] = 0;
                 
                 if(i == (num - 1) && crc_altered)
                     ALTER_CRC = true;
@@ -219,7 +223,6 @@ void Mattenger::recive_msg(){
     
     char *msg = (char*)calloc(MAX_SIZE, sizeof(char));
     unsigned short i = 0, j = 0, n = 0;
-    unsigned long size;
     std::string recreate_msg;
     std::string _resend_;
     char icmp_msg[ICMP_HEAD];
@@ -252,20 +255,18 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case MESSAGE:
-                    recreate_msg = Mattenger::check_message(&size);
+                    recreate_msg = Mattenger::check_message();
                     
                     if(recreate_msg.empty())
                         break;
-                    i = 0;
-                    while(i < size)
-                        std::cout << recreate_msg[i] << std::endl;
+                    std::cout << recreate_msg << std::endl;
                     recreate_msg.clear();
                     
                     Mattenger::finnish_sending();
                     break;
                     
                 case FILE_NAME:
-                    recreate_msg = Mattenger::check_message(&size);
+                    recreate_msg = Mattenger::check_message();
                     
                     if(recreate_msg.empty())
                         break;
@@ -277,12 +278,12 @@ void Mattenger::recive_msg(){
                     break;
                     
                 case FILE_DATA:
-                    recreate_msg = Mattenger::check_message(&size);
+                    recreate_msg = Mattenger::check_message();
                     
                     if(recreate_msg.empty())
                         break;
                     
-                    create_file(recreate_msg, size);
+                    create_file(recreate_msg);
                     recreate_msg.clear();
                     
                     Mattenger::finnish_sending();

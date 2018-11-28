@@ -43,7 +43,7 @@ public:
     void keep_alive();
     void send_file(const char*, size_t);
     void finnish_sending();
-    std::string check_message(unsigned long*);
+    std::string check_message();
     
 };
 
