@@ -30,14 +30,15 @@ std::string FILENAME;
 
 void create_file(std::string f_data){
 
-    unsigned long n = 0, i = 0;
-    while(MSG[i] != NULL) n += MSG_LEN[i];
+//    unsigned long n = 0, i = 0;
+//    while(MSG[i] != NULL) n += MSG_LEN[i];
     
     std::ofstream outfile;
     outfile.open(FILENAME, std::ios::out | std::ios::trunc );
-    i = 0;
-    while(i < n)
-        outfile << f_data[i++];
+//    i = 0;
+//    while(i < n)
+//        outfile << f_data[i++];
+    outfile << f_data;
     outfile.close();
     
 }
@@ -72,7 +73,7 @@ void recive_data(char *msg){
         
         MSG[seq_num] = (char*)calloc(size_num, sizeof(char));
         memcpy(MSG[seq_num], (msg + HEAD), size_num*sizeof(char));
-        MSG_LEN[seq_num] = size_num;
+        //MSG_LEN[seq_num] = size_num;
     }
     
 }
@@ -121,9 +122,10 @@ std::string Mattenger::check_message(){
             i++;
         }
         else{
-            unsigned short k = 0;
-            while(k < MSG_LEN[j])
-                recreate_msg.push_back(MSG[j][k]);
+            recreate_msg += MSG[j];
+            //unsigned short k = 0;
+            //while(k < MSG_LEN[j])
+            //    recreate_msg.push_back(MSG[j][k]);
         }
     }
     
