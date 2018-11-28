@@ -156,7 +156,8 @@ void Mattenger::send_msg(const char *msg, size_t size, char flag, bool crc_alter
             else if(flag == FILE_DATA)
                 FILE_SEND = true;
             
-            unsigned short i = 0, k = 0, j, _i;
+            unsigned short i = 0, j, _i;
+            long k = 0;
             
             unsigned short num = size/FRAGMENT_SIZE;
             if(size % FRAGMENT_SIZE > 0)
